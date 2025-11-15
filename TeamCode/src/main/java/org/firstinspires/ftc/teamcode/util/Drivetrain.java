@@ -1,0 +1,36 @@
+package org.firstinspires.ftc.teamcode.util;
+
+import androidx.annotation.NonNull;
+
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+public class Drivetrain {
+    private final DcMotorEx RF, RB, LF, LB;
+
+    public Drivetrain(@NonNull HardwareMap hwmap){
+        RF = hwmap.get(DcMotorEx.class, HardwareConfig.RF);
+        LF = hwmap.get(DcMotorEx.class, HardwareConfig.RB);
+        RB = hwmap.get(DcMotorEx.class, HardwareConfig.LF);
+        LB = hwmap.get(DcMotorEx.class, HardwareConfig.LB);
+
+        RF.setDirection(DcMotorSimple.Direction.FORWARD);
+        LF.setDirection(DcMotorSimple.Direction.REVERSE);
+        RB.setDirection(DcMotorSimple.Direction.FORWARD);
+        LB.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        RF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void drive(double forward, double right, double rotate) {
+        RF.setPower(forward - right - rotate);
+        LF.setPower(forward + right + rotate);
+        RB.setPower(forward + right - rotate);
+        LB.setPower(forward - right + rotate);
+    }
+}
