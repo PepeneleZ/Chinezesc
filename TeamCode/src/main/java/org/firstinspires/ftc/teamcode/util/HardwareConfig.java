@@ -25,6 +25,8 @@ public class HardwareConfig {
     public static final String encoder_launcher_hrot = "encoder_launcher_hrot";
     public static final String encoder_sorting = "encoder_sorting";
 
-    public static final String color_sensor = "color_sensor";
+    public static final String color_sensor_human = "color_sensor_human";
+    public static final String color_sensor_intake = "color_sensor_intake";
+
 
 }
