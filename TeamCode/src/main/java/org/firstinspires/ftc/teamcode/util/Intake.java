@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Intake {
     public CRServo upper_intake, lower_intake;
+    public boolean running = false;
 
     public Intake(HardwareMap hwmap){
         upper_intake = hwmap.get(CRServo.class, HardwareConfig.upper_intake);
@@ -16,7 +17,13 @@ public class Intake {
     }
 
     public void intake(){
-        upper_intake.setPower(1);
-        lower_intake.setPower(1);
+        if (running) {
+            upper_intake.setPower(1);
+            lower_intake.setPower(1);
+        }
+        else {
+            upper_intake.setPower(0);
+            lower_intake.setPower(0);
+        }
     }
 }
