@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.lib;
 
 import androidx.core.util.Supplier;
 
+/*
 @SuppressWarnings("unused")
 public class PIDF extends PIDF.PID {
     Supplier<Double> kFun = () -> 0d;
@@ -48,3 +49,4 @@ public class PIDF extends PIDF.PID {
         }
     }
 }
+*/
