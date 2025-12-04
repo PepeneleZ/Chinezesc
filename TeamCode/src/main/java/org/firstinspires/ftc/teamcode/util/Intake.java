@@ -16,14 +16,21 @@ public class Intake {
         lower_intake.setDirection(CRServo.Direction.REVERSE);
     }
 
-    public void intake(){
+    public void toggle(){
+        if(!running)
+            running = true;
+        else
+            running = false;
+    }
+
+    public void update(){
         if (running) {
             upper_intake.setPower(1);
-            lower_intake.setPower(1);
+            //lower_intake.setPower(1);
         }
         else {
             upper_intake.setPower(0);
-            lower_intake.setPower(0);
+            //lower_intake.setPower(0);
         }
     }
 }

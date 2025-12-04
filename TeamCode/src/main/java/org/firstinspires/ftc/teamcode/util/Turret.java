@@ -11,8 +11,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class Turret implements Updateable{
 
-    private DcMotorEx back_turret, front_turret;
-    private CRServo turret_hrot, turret_vrot;
+    private DcMotorEx turret_launch;
+    private CRServo turret_hrot;
     private Telemetry telemetry;
 
 
@@ -24,13 +24,8 @@ public class Turret implements Updateable{
     private static final PIDFCoefficients pidfCoefficients= new PIDFCoefficients(0.35,0.02,0.01,0);
     private PIDFController pidfController = new PIDFController(pidfCoefficients);
     public Turret(HardwareMap hwmap, Telemetry telemetry){
-        back_turret = hwmap.get(DcMotorEx.class, HardwareConfig.back_turret);
-        front_turret = hwmap.get(DcMotorEx.class, HardwareConfig.front_turret);
-        turret_hrot = hwmap.get(CRServo.class,HardwareConfig.launcher_hrot);
-        turret_vrot = hwmap.get(CRServo.class,HardwareConfig.launcher_vrot);
-
-        back_turret.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        front_turret.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        turret_launch = hwmap.get(DcMotorEx.class, HardwareConfig.turret_launch);
+        turret_hrot = hwmap.get(CRServo.class,HardwareConfig.turret_hrot);
 
         this.telemetry = telemetry;
 
@@ -41,8 +36,7 @@ public class Turret implements Updateable{
 
     }
     public void launch(){
-        back_turret.setPower(1);
-        front_turret.setPower(1);
+        turret_launch.setPower(1);
     }
 
     @Override

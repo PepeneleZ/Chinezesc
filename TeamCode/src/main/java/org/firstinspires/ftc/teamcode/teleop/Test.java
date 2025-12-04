@@ -19,14 +19,17 @@ public class Test extends LinearOpMode {
 
         robot = new Robot(hardwareMap, telemetry);
 
-        while(opModeIsActive() && !isStopRequested()){
-            robot.driveTrain.drive(-controller1.leftStickY, controller1.leftStickX, controller1.rightStickX);
+        waitForStart();
+
+        while(opModeIsActive() && !isStopRequested()) {
+            robot.driveTrain.drive(-controller1.leftStickX, controller1.leftStickY, controller1.rightStickX);
+
+            if (controller1.cross.isDown()) robot.intake.toggle();
+
+            //if (controller1.circle.isPressed()) robot.intake.upper_intake.setPower(1);
+
+            controller1.update();
+            robot.intake.update();
         }
-
-        if(controller1.cross.isDown())
-            robot.intake.lower_intake.setPower(1);
-
-        if(controller1.circle.isPressed())
-            robot.intake.upper_intake.setPower(1);
     }
 }
