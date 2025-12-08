@@ -13,8 +13,7 @@ public class HardwareConfig {
 
     public static final String turret_hrot = "turret_hrot";
 
-    public static final String upper_intake = "upper_intake";
-    public static final String lower_intake = "lower_intake";
+    public static final String intake = "intake";
 
     public static final String sorting = "sorting";
     public static final String transfer = "transfer";
