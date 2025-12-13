@@ -7,23 +7,20 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
+import org.firstinspires.ftc.teamcode.util.Intake;
 
 @TeleOp
 public class TestIntake extends LinearOpMode {
+    public Intake intake;
     @Override
     public void runOpMode() throws InterruptedException {
-
-        CRServo upper_intake = hardwareMap.get(CRServo.class, HardwareConfig.upper_intake);
-        CRServo lower_intake = hardwareMap.get(CRServo.class, HardwareConfig.lower_intake);
-        upper_intake.setDirection(DcMotorSimple.Direction.REVERSE);
-        lower_intake.setDirection(DcMotorSimple.Direction.FORWARD);
-
+        Intake intake = new Intake(hardwareMap);
 
         waitForStart();
+        intake.toggle();
 
         while(opModeIsActive() && !isStopRequested()) {
-            upper_intake.setPower(1);
-            //+lower_intake.setPower(1);
+            intake.update();
         }
     }
 }
