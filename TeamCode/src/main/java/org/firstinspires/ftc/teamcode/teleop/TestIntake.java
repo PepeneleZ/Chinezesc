@@ -14,7 +14,7 @@ public class TestIntake extends LinearOpMode {
     public Intake intake;
     @Override
     public void runOpMode() throws InterruptedException {
-        Intake intake = new Intake(hardwareMap);
+        intake = new Intake(hardwareMap);
 
         waitForStart();
         intake.toggle();

@@ -27,9 +27,9 @@ public class TestColor extends LinearOpMode {
         while(opModeIsActive() && !isStopRequested()) {
             telemetry.addData("Color sensor intake: ", ColorFunctions.getColor(color_intake.red(),color_intake.green(),color_intake.blue()).val);
             telemetry.addData("Color sensor human: ", ColorFunctions.getColor(color_human.red(),color_human.green(),color_human.blue()).val);
-            telemetry.addData("Red_human: ",color_human.red());
-            telemetry.addData("Green_human: ",color_human.green());
-            telemetry.addData("Blue_human: ",color_human.blue());
+            telemetry.addData("Red_intake: ",color_intake.red());
+            telemetry.addData("Green_intake: ",color_intake.green());
+            telemetry.addData("Blue_intake: ",color_intake.blue());
 
 
 

@@ -1,52 +1,57 @@
 package org.firstinspires.ftc.teamcode.lib;
 
-import androidx.core.util.Supplier;
+public class PIDF {
+    public double kP=0, kI=0, kD=0, kF=0; ;
+    public double targetPos = 0, lastError = 0, sumError = 0, error=0;
+    public long lastTime;
 
-/*
-@SuppressWarnings("unused")
-public class PIDF extends PIDF.PID {
-    Supplier<Double> kFun = () -> 0d;
 
-    public PIDF(double kP, double kI, double kD, Supplier<Double> kFun) {
-        super(kP, kI, kD);
-        this.kFun = kFun;
+    public PIDF(double kP, double kI, double kD, double kF){
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
+        this.kF = kF;
+    }
+    public PIDF(double kP, double kI, double kD){
+        this.kP = kP;
+        this.kI = kI;
+        this.kD = kD;
     }
 
-    @Override
-    public double update(int currentTicks){
-        int e = targetPos - currentTicks;
-        int delta_e = lastError - e;
-        sumError += e;
-        lastError = e;
-        return (e * kP + delta_e * kD + sumError * kI + kFun.get());
+    public void resetPid(){
+        sumError = 0;
+        lastTime = System.nanoTime();
+        lastError = 0;
+        error = 0;
+
+
     }
 
-    @SuppressWarnings("unused")
-    public static class PID {
-        public double kP, kI, kD;
-        protected int targetPos = 0, lastError = 0, sumError = 0;
+    public void setTargetPosition(double target){
+        resetPid();
+        targetPos = target;
+    }
+    public void setTargetWithoutResetting(double delta){
+        targetPos += delta;
+    }
 
-        public PID(double kP, double kI, double kD){
-            this.kP = kP;
-            this.kI = kI;
-            this.kD = kD;
-        }
+    public double getError(){
+        return error;
+    }
 
-        public void resetIntegral(){
-            sumError = 0;
-        }
+    public double update(double currentTicks){
+        long currentTime = System.nanoTime();
+        error = targetPos - currentTicks;
+        double delta_e = lastError - error;
+        double deltaTime = (currentTime-lastTime)*1e-9;
 
-        public void setTargetPosition(int target){
-            targetPos = target;
-        }
+        sumError += error*deltaTime;
+        lastError = error;
+        lastTime = currentTime;
 
-        public double update(int currentTicks){
-            int e = targetPos - currentTicks;
-            int delta_e = lastError - e;
-            sumError += e;
-            lastError = e;
-            return (e * kP + delta_e * kD + sumError * kI);
-        }
+        return (error * kP +
+                delta_e/deltaTime * kD +
+                sumError * kI +
+                kF);
     }
 }
-*/
