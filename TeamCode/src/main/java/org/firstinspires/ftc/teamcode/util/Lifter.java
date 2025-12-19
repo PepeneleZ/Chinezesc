@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -11,7 +12,7 @@ import org.firstinspires.ftc.teamcode.lib.PIDFCoefficients;
 public class Lifter implements Updateable{
     public DcMotorEx front, back;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(2, 0.27, 0.3);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.00002, 0.00027, 0.00003);
     PIDF pid;
     static int MAX_RANGE = 100000;
 
@@ -28,7 +29,7 @@ public class Lifter implements Updateable{
         back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //back.setDirection();
-        //front.setPower();
+        //front.setDirection();
         back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
