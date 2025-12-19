@@ -17,6 +17,13 @@ public class PIDF {
         this.kI = kI;
         this.kD = kD;
     }
+    
+    public PIDF(PIDFCoefficients coeffs){
+        this.kP = coeffs.kP;
+        this.kI = coeffs.kI;
+        this.kD = coeffs.kD;
+        this.kF = coeffs.kF;
+    }
 
     public void resetPid(){
         sumError = 0;
