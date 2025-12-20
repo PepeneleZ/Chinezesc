@@ -15,9 +15,7 @@ public class Lifter implements Updateable{
     public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.00002, 0.00027, 0.00003);
     PIDF pid;
     static int MAX_RANGE = 100000;
-
-    private boolean up = false;
-
+    public LIFTER_POSITIONS lifter_state = LIFTER_POSITIONS.DOWN;
     Telemetry telemetry;
 
     public Lifter(HardwareMap hwmap, Telemetry telemetry){
@@ -35,13 +33,21 @@ public class Lifter implements Updateable{
 
         this.telemetry = telemetry;
     }
+    public enum LIFTER_POSITIONS{
+        DOWN(0),UP(1250);
+        final int val;
+        LIFTER_POSITIONS(int val) {
+            this.val = val;
+        }
+    }
 
     public void toggle(){
         pid.resetPid();
-        if(!up)
-            pid.setTargetPosition(1250); //schimba aici dupa caz
+        if(lifter_state == LIFTER_POSITIONS.DOWN)
+            lifter_state = LIFTER_POSITIONS.UP;
         else
-            pid.setTargetPosition(0); //schimbati si aici daca e nevoie
+            lifter_state = LIFTER_POSITIONS.DOWN;
+        pid.setTargetPosition(lifter_state.val);
     }
 
 

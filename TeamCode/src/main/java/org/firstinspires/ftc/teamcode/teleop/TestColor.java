@@ -31,6 +31,10 @@ public class TestColor extends LinearOpMode {
             telemetry.addData("Green_intake: ",color_intake.green());
             telemetry.addData("Blue_intake: ",color_intake.blue());
 
+            telemetry.addData("Red_human: ",color_human.red());
+            telemetry.addData("Green_human: ",color_human.green());
+            telemetry.addData("Blue_human: ",color_human.blue());
+
 
 
             telemetry.update();

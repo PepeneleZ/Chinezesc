@@ -27,9 +27,6 @@ public class VelocityPID {
         lastTime = 0;
 
     }
-    public double getVelocity(){
-        return currentVelocity;
-    }
 
     public double update(double position){
         long currentTime = System.nanoTime();

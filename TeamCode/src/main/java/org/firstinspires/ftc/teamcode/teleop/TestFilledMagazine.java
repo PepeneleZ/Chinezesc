@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.util.Turret;
 
 @Config
 @TeleOp
-public class Test extends LinearOpMode {
+public class TestFilledMagazine extends LinearOpMode {
     public Robot robot;
     public Controller controller1,controller2;
 
@@ -30,6 +30,7 @@ public class Test extends LinearOpMode {
         robot = new Robot(hardwareMap, telemetry);
         boolean isCheckingIntake = false;
 
+        robot.sorting.fillMagazine();
 
         waitForStart();
 
@@ -107,7 +108,7 @@ public class Test extends LinearOpMode {
                 robot.sorting.transfer_ball();
             }
             if (controller2.dpadDown.isPressed()){
-                robot.sorting.setNextState(Sorting.MOVING_STATES.WAITING_HUMAN_PLAYER);
+
             }
             if (controller2.bumperLeft.isPressed()){
                 Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);

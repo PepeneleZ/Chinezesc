@@ -8,6 +8,7 @@ public class MultiplePIDF {
     public double targetPos = 0, lastError = 0, sumError = 0, error=0;
     public int coef_cont = 0;
     public long lastTime;
+    public int current_pid_cont=0;
 
     public MultiplePIDF(double kP, double kI, double kD, double kF){
         clearPidCoefficients();
@@ -31,23 +32,26 @@ public class MultiplePIDF {
     public void clearPidCoefficients(){
         for(int i=0;i<=max_length;i++){
             pidfCoefficients[i] = new PIDFCoefficients(0,0,0,0);
+            coef_cont = 0;
         }
     }
     public void addPidCoefficients(double kP, double kI, double kD, double kF){
-        pidfCoefficients[++coef_cont] = new PIDFCoefficients(kP,kI,kD,kF);
+        if (coef_cont+1<=max_length-1)
+            pidfCoefficients[++coef_cont] = new PIDFCoefficients(kP,kI,kD,kF);
     }
     public void addPidCoefficients(double kP, double kI, double kD){
-        pidfCoefficients[++coef_cont] = new PIDFCoefficients(kP,kI,kD);
+        if (coef_cont+1<=max_length-1)
+            pidfCoefficients[++coef_cont] = new PIDFCoefficients(kP,kI,kD);
 
     }
     public void changeExistentPidCoefficients(int coef, double kP, double kI, double kD, double kF){
-        if (coef<0||coef>=max_length-1)
+        if (coef<0||coef>max_length-1)
             return;
         pidfCoefficients[coef] = new PIDFCoefficients(kP,kI,kD,kF);
 
     }
     public void changeExistentPidCoefficients(int coef, double kP, double kI, double kD){
-        if (coef<0||coef>max_length)
+        if (coef<0||coef>max_length-1)
             return;
         pidfCoefficients[coef] = new PIDFCoefficients(kP,kI,kD);
 
@@ -55,8 +59,12 @@ public class MultiplePIDF {
     public void switchPid(int cont){
         resetPid();
         currentPidCoefficients = pidfCoefficients[cont];
+        current_pid_cont = cont;
     }
 
+    public int whichPid(){
+        return current_pid_cont;
+    }
 
 
     public void resetPid(){
