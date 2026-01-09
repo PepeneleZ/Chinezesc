@@ -15,26 +15,26 @@ import org.firstinspires.ftc.teamcode.util.Turret;
 
 @Config
 @TeleOp
-public class Test extends LinearOpMode {
-    public Robot robot;
+public class TestSorting extends LinearOpMode {
+    public Sorting sorting;
+    public Intake intake;
     public Controller controller1,controller2;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        intake = new Intake(hardwareMap);
+        sorting = new Sorting(hardwareMap,telemetry,intake);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         controller1 = new Controller(gamepad1);
         controller2 = new Controller(gamepad2);
 
-        robot = new Robot(hardwareMap, telemetry);
-        boolean isCheckingIntake = false;
 
 
         waitForStart();
 
         while(opModeIsActive() && !isStopRequested()) {
-            robot.driveTrain.drive(-controller1.leftStickX, controller1.leftStickY, controller1.rightStickX);
 
 //            if (controller1.circle.isPressed())
 //                robot.sorting.rotate_elice(1);
@@ -42,51 +42,44 @@ public class Test extends LinearOpMode {
 //                robot.sorting.rotate_elice(0.5);
 //            if (controller1.dpadLeft.isPressed())
 //                robot.sorting.rotate_elice(-0.5);
-            if (controller1.circle.isPressed()){
-                robot.intake.toggle(Intake.INTAKE_STATES.SPITTING_OUT);
-            }
             if (controller1.dpadUp.isPressed()){
-                robot.sorting.motif = 6;
+                sorting.motif = 6;
             }
             if (controller1.dpadLeft.isPressed()){
-                robot.sorting.motif = 4;
+                sorting.motif = 4;
             }
             if (controller1.dpadRight.isPressed()){
-                robot.sorting.motif = 2;
-            }
-            if (controller1.bumperRight.isPressed()){
-                //Turret.increaseChangeableTarget();
-                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.FAR);
-            }
-            if (controller1.bumperLeft.isPressed()){
-                //Turret.decreaseChangeableTarget();
-                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
-            }
-            if (controller1.cross.isPressed()){
-                robot.sorting.shoot();
+                sorting.motif = 2;
             }
 
+            if (controller1.cross.isPressed()){
+                sorting.shoot();
+            }
+
+
+
+
             if (Math.abs(controller2.rightStickX)>0.2){
-                robot.sorting.manualBlade(controller2.rightStickX*2);
+                sorting.manualBlade(controller2.rightStickX*40);
             }
 
             if (controller2.triangle.isPressed() || controller1.triangle.isPressed()) {
-                robot.intake.toggle();
-                if (robot.intake.intake_state == Intake.INTAKE_STATES.COLLECTING)
-                    robot.sorting.setNextState(Sorting.MOVING_STATES.WAITING_INTAKE);
+                intake.toggle();
+                if (intake.intake_state == Intake.INTAKE_STATES.COLLECTING)
+                    sorting.setNextState(Sorting.MOVING_STATES.WAITING_INTAKE);
                 else
-                    robot.sorting.resetStates();
+                    sorting.resetStates();
             }
             if (controller2.cross.isPressed())
-                robot.sorting.resetEverything();
+                sorting.resetEverything();
             if (controller2.circle.isPressed()&& Turret.turret_launcher_state!= Turret.TURRET_LAUNCH_SPEEDS.STOPPED) {
-                robot.sorting.shoot();
+                sorting.shoot();
                 if (Turret.turret_launcher_state == Turret.TURRET_LAUNCH_SPEEDS.STOPPED)
                     Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
             }
 
             if (controller2.square.isPressed())
-                robot.sorting.rotate_elice(1);
+                sorting.rotate_elice(1);
 
 //            if (controller2.dpadDown.isPressed()){
 //                robot.sorting.sort_balls();
@@ -96,29 +89,22 @@ public class Test extends LinearOpMode {
 //                Sorting.magazine[4] = Sorting.COLORS.EMPTY;
 //            }
             if (controller2.dpadLeft.isPressed()) {
-                robot.sorting.rotate_elice(-1);
+                sorting.rotate_elice(-1);
             }
-            if (controller2.dpadRight.isPressed()){
-                Turret.setVertical_position();
-            }
+
             if (controller2.dpadUp.isPressed()){
-                robot.sorting.transfer_ball();
+                sorting.transfer_ball();
             }
             if (controller2.dpadDown.isPressed()){
-                robot.sorting.setNextState(Sorting.MOVING_STATES.WAITING_HUMAN_PLAYER);
+                sorting.setNextState(Sorting.MOVING_STATES.WAITING_HUMAN_PLAYER);
             }
-            if (controller2.bumperLeft.isPressed()){
-                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
-            }
-            if(controller2.bumperRight.isPressed())
-                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.FAR);
 
 
 
             controller1.update();
             controller2.update();
-            robot.update();
-            robot.sorting.telemetryData();
+            sorting.update();
+            intake.update();
             telemetry.update();
         }
     }

@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.VelocityPID;
@@ -13,9 +14,9 @@ import org.firstinspires.ftc.teamcode.lib.VelocityPID;
 public class Turret implements Updateable{
 
     private DcMotorEx turret_launch;
-    public CRServo turret_hrot;
+    private static Servo vertical_angle_servo;
     private Telemetry telemetry;
-    public DcMotorEx od1, od2;
+
 
 
     private static final int full_rotation = 600;
@@ -24,6 +25,8 @@ public class Turret implements Updateable{
     public double turret_launch_position = 0;
     public double turret_angle = 0;
     public static TURRET_LAUNCH_SPEEDS turret_launcher_state=TURRET_LAUNCH_SPEEDS.STOPPED;
+    public static VERTICAL_TURRET_POSITIONS turret_vertical_state = VERTICAL_TURRET_POSITIONS.DOWN;
+    public static double turret_vertical_position = 0;
 
     public static VelocityPID velocityPID = new VelocityPID(0.0026d,0.0005d,0.0000004d);
     public double power_of_launch;
@@ -35,7 +38,7 @@ public class Turret implements Updateable{
 
     public Turret(HardwareMap hwmap, Telemetry telemetry){
         turret_launch = hwmap.get(DcMotorEx.class, HardwareConfig.turret_launch);
-        turret_hrot = hwmap.get(CRServo.class,HardwareConfig.turret_hrot);
+        vertical_angle_servo = hwmap.get(Servo.class, HardwareConfig.vertical_angle_servo);
 
         turret_launch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret_launch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -43,10 +46,9 @@ public class Turret implements Updateable{
         turret_launch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
+        vertical_angle_servo.setPosition(turret_vertical_state.val);
         velocityPID.resetPid();
         setTarget_rotation(turret_launcher_state);
-        od1 = hwmap.get(DcMotorEx.class,HardwareConfig.front_lifter);
-        od2 = hwmap.get(DcMotorEx.class,HardwareConfig.RB);
 
 
         this.telemetry = telemetry;
@@ -62,14 +64,19 @@ public class Turret implements Updateable{
         ticks = 0;
     }
 
-
-    public static enum TURRET_LAUNCH_SPEEDS{
+    public enum TURRET_LAUNCH_SPEEDS{
         CLOSE(1100),FAR(1645),STOPPED(0);
         final double val;
         TURRET_LAUNCH_SPEEDS(double val) {
             this.val = val;
         }
     }
+    public enum VERTICAL_TURRET_POSITIONS{
+        DOWN(0),MIDDLE(0.2),UP(0.4), OTHER(0.3333);
+        final double val;
+        VERTICAL_TURRET_POSITIONS(double val){this.val = val;}
+    }
+
     public static void setTarget_rotation(double target_rotation){
         velocityPID.setTargetVelocity(target_rotation);
         runPid = true;
@@ -80,6 +87,27 @@ public class Turret implements Updateable{
         velocityPID.setTargetVelocity(changeable_target);
         runPid = true;
         ticks=0;
+    }
+    public static void setVertical_position(double target_position){
+        vertical_angle_servo.setPosition(target_position);
+        turret_vertical_position = target_position;
+        turret_vertical_state = VERTICAL_TURRET_POSITIONS.OTHER;
+    }
+    public static void setVertical_position(VERTICAL_TURRET_POSITIONS state){
+        vertical_angle_servo.setPosition(state.val);
+        turret_vertical_state = state;
+        turret_vertical_position = state.val;
+    }
+    public static void setVertical_position(){
+        if (turret_vertical_state == VERTICAL_TURRET_POSITIONS.DOWN) {
+            vertical_angle_servo.setPosition(VERTICAL_TURRET_POSITIONS.UP.val);
+            turret_vertical_state = VERTICAL_TURRET_POSITIONS.UP;
+        }
+        else {
+            vertical_angle_servo.setPosition(VERTICAL_TURRET_POSITIONS.DOWN.val);
+            turret_vertical_state = VERTICAL_TURRET_POSITIONS.DOWN;
+        }
+        turret_vertical_position = turret_vertical_state.val;
     }
     public static void increaseChangeableTarget(){
         changeable_target +=50;
@@ -119,8 +147,6 @@ public class Turret implements Updateable{
         telemetry.addData("RUN TURRET PID",runPid);
         telemetry.addData("TURRET TARGET VELOCITY: ",velocityPID.targetVelocity);
         telemetry.addData("TURRET CHANGEABLE TARGET:", changeable_target);
-        telemetry.addData("ODOMETRY 1: ",od1.getCurrentPosition());
-        telemetry.addData("ODOMETRY 2: ",od2.getCurrentPosition());
 
 
     }

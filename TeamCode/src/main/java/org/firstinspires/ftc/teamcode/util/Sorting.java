@@ -14,7 +14,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.MultiplePIDF;
 import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
 
-//     (.) (.)
+
+//     (. Y .)
 //       ).(
 //      \ Y /
 //       | |
@@ -25,7 +26,7 @@ import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
 public class Sorting implements  Updateable{
 //---------MOTORS--------------------
     public Servo transfer_servo;
-    public CRServo blade;
+    public DcMotorEx blade;
     public ColorSensor color_sensor_human;
     public ColorSensor color_sensor_intake;
     private final Intake intake;
@@ -33,13 +34,12 @@ public class Sorting implements  Updateable{
 
     public static MultiplePIDF pidElice = new MultiplePIDF(0.000163d,0.0000062d,0.0000009d);
 
-    public DcMotorEx encoder_elice;
     private final Telemetry telemetry;
 
 
 //----------POSITIONS-------------
     public TRANSFER_POS transfer_pos = TRANSFER_POS.DOWN;
-    public static final int full_rotation = 8192;
+    public static final double full_rotation = 384.5;
     public static final double one_rotation = full_rotation/6.0;
     public double position=0; // increases or decreses forever;
     public int blade_rotation=0; // betwen [0, full_rotation] equal to position % full_rotation
@@ -51,11 +51,11 @@ public class Sorting implements  Updateable{
     private final ElapsedTime transferTimer, collectTimer, slightlyMovingTimer;
     private boolean transfer_isUp = false;
     private int shooting_balls = 0;
-    private static final int admissible_error=100;
+    private static final int admissible_error=7;
     private boolean runPid=false;
     private boolean isManually = false;
     private boolean isSlightlyMovingActivatable = false;
-    public static double shooting_const = 350.123456;
+    public static double shooting_const = 16;
     public boolean isShootingPosition = false;
     public double collectTime = 0;
     private double rotations_for_telemetry;
@@ -71,12 +71,11 @@ public class Sorting implements  Updateable{
 
 
     public Sorting(HardwareMap hwmap, Telemetry telemetry, Intake intake){
-        blade = hwmap.get(CRServo.class, HardwareConfig.sorting);
+        blade = hwmap.get(DcMotorEx.class, HardwareConfig.sorting);
         transfer_servo = hwmap.get(Servo.class,HardwareConfig.transfer);
         color_sensor_human = hwmap.get(ColorSensor.class, HardwareConfig.color_sensor_human);
         color_sensor_intake = hwmap.get(ColorSensor.class, HardwareConfig.color_sensor_intake);
         this.intake = intake;
-        encoder_elice = hwmap.get(DcMotorEx.class, HardwareConfig.LB);
         this.telemetry = telemetry;
 
 
@@ -107,9 +106,9 @@ public class Sorting implements  Updateable{
         transfer_servo.setPosition(transfer_pos.val);
 
         blade.setDirection(DcMotorSimple.Direction.REVERSE);
-        encoder_elice.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        encoder_elice.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        encoder_elice.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        blade.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        blade.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        blade.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
 
        // encoder_elice.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -213,9 +212,9 @@ public class Sorting implements  Updateable{
         intake.toggle(Intake.INTAKE_STATES.STOPPED);
         Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.STOPPED);
 
-        encoder_elice.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        encoder_elice.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        encoder_elice.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        blade.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        blade.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        blade.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //encoder_elice.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
@@ -258,11 +257,14 @@ public class Sorting implements  Updateable{
     }
 
     public void rotate_elice(double turns){ // positive is right, negative is left
+        /* DOAR UN PIDDD
         if (getNumberOfBalls()==0 && (int)turns!=turns)
             pidElice.switchPid(4);
         else
             pidElice.switchPid(getNumberOfBalls());
         pidElice.switchPid(getNumberOfBalls());
+
+         */
         isSlightlyMovingActivatable = true;
 
 
@@ -279,10 +281,13 @@ public class Sorting implements  Updateable{
         isShootingPosition = false;
     }
     public void rotate_elice(double turns, boolean shooting){ // positive is right, negative is left
+        /* ONE PIDDDD
         if (turns==0 && shooting)
             pidElice.switchPid(5+getNumberOfBalls());
         else
             pidElice.switchPid(getNumberOfBalls());
+
+         */
         isSlightlyMovingActivatable = true;
 
 
@@ -307,9 +312,9 @@ public class Sorting implements  Updateable{
 
     @Override
     public void update(){
-        position = encoder_elice.getCurrentPosition();
-        blade_rotation = (int)position % full_rotation;
-        if(blade_rotation<0)blade_rotation=full_rotation+blade_rotation;
+        position = blade.getCurrentPosition();
+        blade_rotation = (int)position % (int)full_rotation;
+        if(blade_rotation<0)blade_rotation=(int)full_rotation+blade_rotation;
         pidError = target-position;
 
 
@@ -493,7 +498,7 @@ public class Sorting implements  Updateable{
             return;
         }
 
-        rotate_elice((double)rotations,true);
+        rotate_elice(rotations,true);
 
     }
     public void shoot(){
@@ -514,7 +519,7 @@ public class Sorting implements  Updateable{
 
         int index=0, min_dif=10000000, dif=0;
         for (int i=0;i<=6;i++){
-            dif = position-full_rotation/6*i;
+            dif = position-(int)full_rotation/6*i;
             if(dif<0)dif=-dif;
 
             if (dif<min_dif){

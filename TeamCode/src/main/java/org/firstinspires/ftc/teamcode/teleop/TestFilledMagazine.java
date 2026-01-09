@@ -62,15 +62,6 @@ public class TestFilledMagazine extends LinearOpMode {
                 Turret.decreaseChangeableTarget();
             }
 
-            if (controller1.rightTrigger>0.2 || controller1.leftTrigger>0.2) {
-                if(controller1.rightTrigger>controller1.leftTrigger)
-                    robot.turret.turret_hrot.setPower(controller1.rightTrigger);
-                else
-                    robot.turret.turret_hrot.setPower(-controller1.leftTrigger);
-            }
-            else
-                robot.turret.turret_hrot.setPower(0);
-
 
             if (Math.abs(controller2.rightStickX)>0.2){
                 robot.sorting.manualBlade(controller2.rightStickX*40);

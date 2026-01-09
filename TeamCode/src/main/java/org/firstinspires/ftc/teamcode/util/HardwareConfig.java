@@ -26,6 +26,8 @@ public class HardwareConfig {
 
     public static final String imu = "imu";
     public static final String pinpoint_calculator = "pinpointCalculator";
+    public static final String vertical_angle_servo = "vertical_angle_servo";
+    public static final String limelight = "limelight";
 
    // public static final String right_pod = "rightPod";
    // public static final String left_pod = "leftPod";
