@@ -15,6 +15,7 @@ public class Turret implements Updateable{
     private DcMotorEx turret_launch;
     public CRServo turret_hrot;
     private Telemetry telemetry;
+    public DcMotorEx od1, od2;
 
 
     private static final int full_rotation = 600;
@@ -44,6 +45,8 @@ public class Turret implements Updateable{
         turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
         velocityPID.resetPid();
         setTarget_rotation(turret_launcher_state);
+        od1 = hwmap.get(DcMotorEx.class,HardwareConfig.front_lifter);
+        od2 = hwmap.get(DcMotorEx.class,HardwareConfig.RB);
 
 
         this.telemetry = telemetry;
@@ -61,7 +64,7 @@ public class Turret implements Updateable{
 
 
     public static enum TURRET_LAUNCH_SPEEDS{
-        CLOSE(1100),FAR(1590),STOPPED(0);
+        CLOSE(1100),FAR(1645),STOPPED(0);
         final double val;
         TURRET_LAUNCH_SPEEDS(double val) {
             this.val = val;
@@ -103,8 +106,6 @@ public class Turret implements Updateable{
 
 
 
-
-
         turret_angle = turret_launch_position /full_rotation*360;
 
         update_telemetry();
@@ -118,6 +119,8 @@ public class Turret implements Updateable{
         telemetry.addData("RUN TURRET PID",runPid);
         telemetry.addData("TURRET TARGET VELOCITY: ",velocityPID.targetVelocity);
         telemetry.addData("TURRET CHANGEABLE TARGET:", changeable_target);
+        telemetry.addData("ODOMETRY 1: ",od1.getCurrentPosition());
+        telemetry.addData("ODOMETRY 2: ",od2.getCurrentPosition());
 
 
     }

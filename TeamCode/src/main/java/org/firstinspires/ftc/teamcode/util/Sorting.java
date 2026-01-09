@@ -1,11 +1,8 @@
   package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.pedropathing.control.PIDFCoefficients;
-import com.pedropathing.control.PIDFController;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,10 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.MultiplePIDF;
-import org.firstinspires.ftc.teamcode.lib.PIDF;
 import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
-import org.opencv.ml.EM;
-import org.slf4j.helpers.NOPLogger;
 
 //     (.) (.)
 //       ).(
@@ -52,21 +46,24 @@ public class Sorting implements  Updateable{
     public int current_blade_index=0;
     public int last_blade_index=0;
     public double target;
-    private double blade_target;
+    private double blade_target=0;
     public double pidError;
-    private final ElapsedTime transferTimer;
+    private final ElapsedTime transferTimer, collectTimer, slightlyMovingTimer;
     private boolean transfer_isUp = false;
-    private int shooting_balls = 3;
+    private int shooting_balls = 0;
     private static final int admissible_error=100;
     private boolean runPid=false;
     private boolean isManually = false;
+    private boolean isSlightlyMovingActivatable = false;
     public static double shooting_const = 350.123456;
     public boolean isShootingPosition = false;
+    public double collectTime = 0;
+    private double rotations_for_telemetry;
 
 
 //----------STATES-----------------
     public static COLORS[] magazine = new COLORS[7];// 2 - intake || 4 - aruncare  || 6 - rezerva   1 - intrare human
-    public int motif=4; // 6/4/2
+    public int motif=6; // 4/6/2
     public MOVING_STATES current_moving_state = MOVING_STATES.NOTHING;
     public MOVING_STATES next_moving_state = MOVING_STATES.NOTHING;
     public MOVING_STATES last_moving_state = MOVING_STATES.NOTHING;
@@ -87,12 +84,22 @@ public class Sorting implements  Updateable{
         pidElice.addPidCoefficients(0.000155d,0.0000056d,0.0000005d);// 1 bile
         pidElice.addPidCoefficients(0.00015d,0.0000042,0.00000091d);// 2 bile
         pidElice.addPidCoefficients(0.00012d,0.000002d,0.000000301d);// 3 bile
-        pidElice.addPidCoefficients(0.0002d,0.0000056d,0.0000005d);// (4) half rotation
-        pidElice.addPidCoefficients(0.0003d,0.000006d,0.0000005d);// 5) quarter rotation
+        pidElice.addPidCoefficients(0.00022d,0.000001d,0.0000004d);// (4) half rotation
+
+        /// ///////////////
+        pidElice.addPidCoefficients(0.00045d,0.0000245d,0.0000005d);// 5) quarter rotation
+        pidElice.addPidCoefficients(0.00052d,0.000007d,0.0000005d,0.00002);// 6) 1 ball
+        pidElice.addPidCoefficients(0.00043d,0.0000008d,0,0.00003); // 7 2 ball
+        pidElice.addPidCoefficients(0.00042d, 0.00000026d,0.00000001d, 0.000015d); // 8 3 ball
+
+
+
 
 
 
         transferTimer = new ElapsedTime();
+        collectTimer = new ElapsedTime();
+        slightlyMovingTimer = new ElapsedTime();
         transfer_servo.setDirection(Servo.Direction.REVERSE);
 
 
@@ -125,7 +132,7 @@ public class Sorting implements  Updateable{
         MOVING_STATES(String val){this.val = val;}
     }
 
-    public static enum COLORS{
+    public enum COLORS{
         GREEN("green"), PURPLE("parpal"), EMPTY("empty");
         public final String val;
         COLORS(String val) {
@@ -142,6 +149,10 @@ public class Sorting implements  Updateable{
 
         else {
             if (state == MOVING_STATES.WAITING_INTAKE) {
+                collectTimer.reset();
+                collectTimer.startTime();
+                collectTime = 0;
+
                 if (current_blade_index % 2 == 1) {
                     current_moving_state = state;
                     rotate_elice(0.5);
@@ -180,23 +191,32 @@ public class Sorting implements  Updateable{
     }
     public void resetEverything(){
         resetStates();
+        pidElice.setTargetPosition(0);
+        pidElice.resetPid();
         last_moving_state = MOVING_STATES.NOTHING;
         last_blade_index = 0;
         current_blade_index = 0;
+        isManually = false;
         runPid = false;
         transfer_ball(false);
+        transfer_isUp = false;
         clearMagazine();
         pidError = 0;
 
         position = 0;
         blade_rotation = 0;
-        shooting_balls = 3;
+        blade_target = 0;
         target = 0;
+        shooting_balls = 0;
+        target = 0;
+        pidError = 0;
+        intake.toggle(Intake.INTAKE_STATES.STOPPED);
+        Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.STOPPED);
 
         encoder_elice.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         encoder_elice.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         encoder_elice.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-        encoder_elice.setDirection(DcMotorSimple.Direction.REVERSE);
+        //encoder_elice.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
@@ -238,11 +258,12 @@ public class Sorting implements  Updateable{
     }
 
     public void rotate_elice(double turns){ // positive is right, negative is left
-//        if (getNumberOfBalls()==0 && (int)turns!=turns)
-//            pidElice.switchPid(4);
-//        else
-//            pidElice.switchPid(getNumberOfBalls());
+        if (getNumberOfBalls()==0 && (int)turns!=turns)
+            pidElice.switchPid(4);
+        else
+            pidElice.switchPid(getNumberOfBalls());
         pidElice.switchPid(getNumberOfBalls());
+        isSlightlyMovingActivatable = true;
 
 
         last_moving_state = current_moving_state;
@@ -258,19 +279,19 @@ public class Sorting implements  Updateable{
         isShootingPosition = false;
     }
     public void rotate_elice(double turns, boolean shooting){ // positive is right, negative is left
-//        if (turns==0 && shooting)
-//            pidElice.switchPid(5);
-//        else
-//            pidElice.switchPid(getNumberOfBalls());
-        pidElice.switchPid(getNumberOfBalls());
+        if (turns==0 && shooting)
+            pidElice.switchPid(5+getNumberOfBalls());
+        else
+            pidElice.switchPid(getNumberOfBalls());
+        isSlightlyMovingActivatable = true;
 
 
         last_moving_state = current_moving_state;
         double delta_shooting = 0;
         if (shooting){
             delta_shooting = shooting_const;
-//            if(turns<0)
-//                delta_shooting = -delta_shooting;
+            if(turns<0)
+                delta_shooting += delta_shooting/2.3;
             isShootingPosition = true;
         }
 
@@ -294,40 +315,32 @@ public class Sorting implements  Updateable{
 
 
         if (runPid || isManually) {
-            double power = pidElice.update(position);
-            blade.setPower(power);
+            double nigger;
+            nigger = pidElice.update(position);
+            blade.setPower(nigger);
         }
-        else if (!isManually)
-            blade.setPower(0);
-        if (current_moving_state == MOVING_STATES.MOVING)
-            intake.toggle(Intake.INTAKE_STATES.SLIGHTLY_MOVING);
-        else if (intake.intake_state == Intake.INTAKE_STATES.SLIGHTLY_MOVING)
-            intake.toggle(intake.intake_state = Intake.INTAKE_STATES.STOPPED);
+        else blade.setPower(0);
+
+        if (intake.intake_state != Intake.INTAKE_STATES.SLIGHTLY_MOVING && isSlightlyMovingActivatable) {
+            if (current_moving_state == MOVING_STATES.MOVING) {
+                intake.toggle(Intake.INTAKE_STATES.SLIGHTLY_MOVING);
+                slightlyMovingTimer.reset();
+                slightlyMovingTimer.startTime();
+                isSlightlyMovingActivatable = false;
+            }
+        }
+        else if (intake.intake_state == Intake.INTAKE_STATES.SLIGHTLY_MOVING && (current_moving_state != MOVING_STATES.MOVING || slightlyMovingTimer.seconds() >0.7)){
+            if (intake.fromCollectingToSlightly)
+                intake.toggle(Intake.INTAKE_STATES.COLLECTING);
+            else
+                intake.toggle(Intake.INTAKE_STATES.STOPPED);
+            slightlyMovingTimer.reset();
+        }
 
          if (Math.abs(pidError) > admissible_error*5 && !runPid && Turret.turret_launcher_state == Turret.TURRET_LAUNCH_SPEEDS.STOPPED) {
              runPid = true;
              pidElice.resetPid();
         }
-
-
-//        current_blade_index = blade_rotation/one_rotation;
-
-//        if (current_blade_index != last_blade_index){
-//            if ( (position>0 && blade_rotation%one_rotation<one_rotation*0.79) || (position<0 && blade_rotation%one_rotation>one_rotation*0.79) ){
-//                boolean direction_of_rotation;
-//                if (current_blade_index==5&&last_blade_index==0)
-//                    direction_of_rotation = false;
-//                else if (current_blade_index==0&&last_blade_index==5)
-//                    direction_of_rotation = true;
-//                else
-//                    direction_of_rotation =(current_blade_index-last_blade_index>0);
-//
-//                rotate_balls(direction_of_rotation);
-//                last_blade_index = current_blade_index;
-//
-//            }
-//        }
-
 
         if(transfer_isUp && transferTimer.milliseconds()>200){
             transfer_ball(false);
@@ -337,18 +350,17 @@ public class Sorting implements  Updateable{
 
         if (current_blade_index != last_blade_index){
                 boolean direction_of_rotation;
-                if (current_blade_index==5&&last_blade_index==0)
+                if (current_blade_index==6&&last_blade_index==1)
                     direction_of_rotation = false;
-                else if (current_blade_index==0&&last_blade_index==5)
+                else if (current_blade_index==1&&last_blade_index==6)
                     direction_of_rotation = true;
                 else
                     direction_of_rotation =(current_blade_index-last_blade_index>0);
 
                 rotate_balls(direction_of_rotation);
-                last_blade_index = current_blade_index;
-
-
         }
+        last_blade_index = current_blade_index;
+
 
         if ((current_moving_state == MOVING_STATES.NOTHING || current_moving_state == MOVING_STATES.WAITING_INTAKE || current_moving_state == MOVING_STATES.WAITING_HUMAN_PLAYER)&& next_moving_state != MOVING_STATES.NOTHING){
             last_moving_state = current_moving_state;
@@ -442,7 +454,7 @@ public class Sorting implements  Updateable{
     }
     public void sort_balls(){
         int current_green_pos = getGreen();
-        int rotations=0;
+        double rotations=0;
        // int rotations = motif - current_green_pos;
         int nrofballs = getNumberOfBalls();
 
@@ -450,33 +462,38 @@ public class Sorting implements  Updateable{
         if(nrofballs==1){
             for(int i=1;i<=6;i++){
                 if(magazine[i] != COLORS.EMPTY) {
-                    rotations = 4 - i;
-                    return;
+                    rotations = (4 - i)/2.0;
                 }
             }
         }
         else if (nrofballs==2){
-            int starting_i;
-
-            if (current_blade_index%2==0) starting_i = 2;
-            else starting_i = 1;
-
-            for(int i=starting_i;i<=6;i+=2){
-                if (magazine[i] != COLORS.EMPTY) {
-                    rotations = 4-i;
-                    return;
-                }
+            if (current_blade_index % 2 ==0) {
+                if (magazine[2] != COLORS.EMPTY && magazine[6] != COLORS.EMPTY)
+                    rotations = -1;
+                else if (magazine[4] != COLORS.EMPTY && magazine[2] != COLORS.EMPTY)
+                    rotations = 1;
+                else if (magazine[4] != COLORS.EMPTY && magazine[6] != COLORS.EMPTY)
+                    rotations = 0;
+            }
+            else {
+                if (magazine[1] != COLORS.EMPTY && magazine[3] != COLORS.EMPTY)
+                    rotations = 1.5;
+                else if (magazine[1] != COLORS.EMPTY && magazine[5] != COLORS.EMPTY)
+                    rotations = -0.5;
+                else if (magazine[3] != COLORS.EMPTY && magazine[5] != COLORS.EMPTY)
+                    rotations = 0.5;
             }
         }
         else if (nrofballs == 3){
-            rotations = motif - current_green_pos;
+            rotations = (motif - current_green_pos)/2.0;
         }
+        rotations_for_telemetry = rotations;
         if(rotations==0) {
-            //rotate_elice(0,true);
+            rotate_elice(0,true);
             return;
         }
 
-        rotate_elice((double)rotations/2,true);
+        rotate_elice((double)rotations,true);
 
     }
     public void shoot(){
@@ -505,7 +522,8 @@ public class Sorting implements  Updateable{
                 index = i;
             }
         }
-        if (index==6) index = 0;
+        index+=2;
+        if (index>6) index %=6;
         return index;
     }
 
@@ -531,6 +549,10 @@ public class Sorting implements  Updateable{
     public boolean isFull(){
         if((magazine[2] != COLORS.EMPTY && magazine[4] != COLORS.EMPTY && magazine[6] != COLORS.EMPTY) || (magazine[1] != COLORS.EMPTY && magazine[3] != COLORS.EMPTY && magazine[5] != COLORS.EMPTY)){
             intake.toggle(Intake.INTAKE_STATES.STOPPED);
+            if (collectTime==0) {
+                collectTime = collectTimer.seconds();
+                collectTimer.reset();
+            }
             return true;
         } else {
             return false;
@@ -611,6 +633,8 @@ public class Sorting implements  Updateable{
         telemetry.addData("Timer: ",transferTimer.milliseconds());
         telemetry.addData("runPid: ",runPid);
         telemetry.addData("Which pid: ", pidElice.whichPid());
+        telemetry.addData("Collecting time: ",collectTime);
+        telemetry.addData("Rotations for sorting: ",rotations_for_telemetry);
 
         telemetry.addData("1: ", magazine[1].val);
         telemetry.addData("2: ", magazine[2].val);

@@ -21,7 +21,7 @@ public class SmallTriangle extends LinearOpMode {
         robot.sorting.fillMagazine();
         waitForStart();
         Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.FAR);
-        while (!isStopRequested() && (timer.seconds()<15 || action==0)) {
+        while (!isStopRequested() && (timer.seconds()<20 || action==0)) {
             if(action==0){
                 timer = new ElapsedTime();
                 timer.reset();
@@ -32,13 +32,18 @@ public class SmallTriangle extends LinearOpMode {
                 robot.sorting.shoot();
                 action++;
             }
-            else if (action==2 && timer.seconds()>6){
-                robot.driveTrain.setMotorPower(1, -1, -1, 1);
+            if(action ==2 && timer.seconds()>8){
+                robot.sorting.shoot();
                 action++;
             }
-            else if (action ==3 && timer.seconds()>6.6){
+            else if (action==3 && timer.seconds()>14){
+                robot.driveTrain.setMotorPower(-1, -1, 1, 1);
+                action++;
+            }
+            else if (action ==4 && timer.seconds()>14.6){
                 robot.driveTrain.setMotorPower(0, 0, 0, 0);
                 Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.STOPPED);
+                robot.sorting.rotate_elice(1);
                 action++;
             }
 

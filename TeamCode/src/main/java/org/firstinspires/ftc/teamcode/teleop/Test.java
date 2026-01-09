@@ -55,10 +55,15 @@ public class Test extends LinearOpMode {
                 robot.sorting.motif = 2;
             }
             if (controller1.bumperRight.isPressed()){
-                Turret.increaseChangeableTarget();
+                //Turret.increaseChangeableTarget();
+                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.FAR);
             }
             if (controller1.bumperLeft.isPressed()){
-                Turret.decreaseChangeableTarget();
+                //Turret.decreaseChangeableTarget();
+                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
+            }
+            if (controller1.cross.isPressed()){
+                robot.sorting.shoot();
             }
 
             if (controller1.rightTrigger>0.2 || controller1.leftTrigger>0.2) {
@@ -84,8 +89,11 @@ public class Test extends LinearOpMode {
             }
             if (controller2.cross.isPressed())
                 robot.sorting.resetEverything();
-            if (controller2.circle.isPressed())//&& Turret.turret_launcher_state!= Turret.TURRET_LAUNCH_SPEEDS.STOPPED)
+            if (controller2.circle.isPressed()&& Turret.turret_launcher_state!= Turret.TURRET_LAUNCH_SPEEDS.STOPPED) {
                 robot.sorting.shoot();
+                if (Turret.turret_launcher_state == Turret.TURRET_LAUNCH_SPEEDS.STOPPED)
+                    Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
+            }
 
             if (controller2.square.isPressed())
                 robot.sorting.rotate_elice(1);

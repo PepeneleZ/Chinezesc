@@ -35,8 +35,8 @@ public class Drivetrain {
     }
     public void setMotorPower(double rf_power,double lf_power, double rb_power, double lb_power){
         RF.setPower(rf_power);
-        LF.setPower(lf_power);
+        LF.setPower(-lf_power);
         RB.setPower(rb_power);
-        LB.setPower(lb_power);
+        LB.setPower(-lb_power);
     }
 }

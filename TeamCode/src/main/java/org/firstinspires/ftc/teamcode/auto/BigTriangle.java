@@ -13,7 +13,7 @@ public class BigTriangle extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         bot = new Robot(hardwareMap,telemetry);
         waitForStart();
-        bot.driveTrain.setMotorPower(1,-1,-1,1);
+        bot.driveTrain.setMotorPower(1,1,1,1);
         bot.update();
         sleep(600);
         if(isStopRequested()) return;

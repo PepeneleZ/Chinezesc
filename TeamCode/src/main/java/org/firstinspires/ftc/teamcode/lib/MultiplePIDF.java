@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.lib;
 
 public class MultiplePIDF {
-    public final int max_length=5;
+    public static final int max_length=10;
 
-    public PIDFCoefficients[] pidfCoefficients = new PIDFCoefficients[10] ;
+    public PIDFCoefficients[] pidfCoefficients = new PIDFCoefficients[max_length] ;
     public PIDFCoefficients currentPidCoefficients;
     public double targetPos = 0, lastError = 0, sumError = 0, error=0;
     public int coef_cont = 0;
@@ -30,17 +30,17 @@ public class MultiplePIDF {
 
 
     public void clearPidCoefficients(){
-        for(int i=0;i<=max_length;i++){
+        for(int i=0;i<max_length;i++){
             pidfCoefficients[i] = new PIDFCoefficients(0,0,0,0);
             coef_cont = 0;
         }
     }
     public void addPidCoefficients(double kP, double kI, double kD, double kF){
-        if (coef_cont+1<=max_length-1)
+        if (coef_cont+1<max_length)
             pidfCoefficients[++coef_cont] = new PIDFCoefficients(kP,kI,kD,kF);
     }
     public void addPidCoefficients(double kP, double kI, double kD){
-        if (coef_cont+1<=max_length-1)
+        if (coef_cont+1<max_length)
             pidfCoefficients[++coef_cont] = new PIDFCoefficients(kP,kI,kD);
 
     }

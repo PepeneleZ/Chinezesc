@@ -24,5 +24,11 @@ public class HardwareConfig {
     public static final String color_sensor_human = "color_sensor_human";
     public static final String color_sensor_intake = "color_sensor_intake";
 
+    public static final String imu = "imu";
+    public static final String pinpoint_calculator = "pinpointCalculator";
+
+   // public static final String right_pod = "rightPod";
+   // public static final String left_pod = "leftPod";
+   // public static final String strafe_pod = "strafePod";
 
 }
