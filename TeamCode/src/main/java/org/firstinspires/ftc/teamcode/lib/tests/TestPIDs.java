@@ -34,7 +34,7 @@ public class TestPIDs extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
        // servo_motor = hardwareMap.get(CRServo.class, HardwareConfig.sorting);
        // motor_encoder = hardwareMap.get(DcMotorEx.class, HardwareConfig.LB);
-        motor = hardwareMap.get(DcMotorEx.class, HardwareConfig.sorting);
+        motor = hardwareMap.get(DcMotorEx.class, HardwareConfig.turret_launch);
         voltageSensor = hardwareMap.getAll(VoltageSensor.class).get(0);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         controller1 = new Controller(gamepad1);

@@ -15,14 +15,12 @@ public class HardwareConfig {
 
     public static final String intake = "intake";
 
-    public static final String sorting = "sorting";
     public static final String transfer = "transfer";
 
     public static final String encoder_launcher_hrot = "encoder_launcher_hrot";
-    public static final String encoder_sorting = "encoder_sorting";
 
-    public static final String color_sensor_human = "color_sensor_human";
-    public static final String color_sensor_intake = "color_sensor_intake";
+    public static final String color_sensor = "color_sensor";
+
 
     public static final String imu = "imu";
     public static final String pinpoint_calculator = "pinpointCalculator";

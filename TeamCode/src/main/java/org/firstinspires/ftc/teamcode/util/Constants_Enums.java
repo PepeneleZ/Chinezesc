@@ -11,7 +11,7 @@ public class Constants_Enums {
         }
     }
     public enum MOVING_STATES {
-        WAITING_HUMAN_PLAYER("waiting_human_player"), WAITING_INTAKE("waiting_intake"), NOTHING("nothing"), MOVING("moving") , SHOOTING("shooting");
+        WAITING_INTAKE("waiting_intake"), NOTHING("nothing"), SHOOTING("shooting");
         final String val;
         MOVING_STATES(String val){this.val = val;}
     }
@@ -39,6 +39,12 @@ public class Constants_Enums {
         DOWN(0),MIDDLE(0.2),UP(0.4), OTHER(0.3333);
         final double val;
         VERTICAL_TURRET_POSITIONS(double val){this.val = val;}
+    }
+
+    public enum MOTIFS {
+        GPP(1), PGP(2), PPG(3);
+        final int val;
+        MOTIFS(int val){this.val = val;}
     }
 
 

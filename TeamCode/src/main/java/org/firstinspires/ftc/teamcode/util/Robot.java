@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Robot implements Updateable{
     public Drivetrain driveTrain;
     public Intake intake;
-    public Sorting sorting;
+    public Storage storage;
     public Turret turret;
     public VoltageSensor voltageSensor;
 
@@ -16,13 +16,13 @@ public class Robot implements Updateable{
         voltageSensor = hwmap.getAll(VoltageSensor.class).get(0);
         driveTrain = new Drivetrain(hwmap);
         intake = new Intake(hwmap);
-        sorting = new Sorting(hwmap,telemetry, intake,voltageSensor);
+        storage = new Storage(hwmap,telemetry, intake);
         turret = new Turret(hwmap, telemetry,voltageSensor);
     }
     @Override
     public void update() {
-        intake.update();
-        sorting.update();
+        storage.update();
         turret.update();
+        intake.update();
     }
 }

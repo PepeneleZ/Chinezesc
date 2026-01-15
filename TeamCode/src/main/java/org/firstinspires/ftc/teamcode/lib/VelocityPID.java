@@ -19,13 +19,12 @@ public class VelocityPID {
     public void setTargetVelocity(double targetVelocity) {
         resetPid();
         this.targetVelocity = targetVelocity;
-
     }
+
     public void resetPid() {
         sumError = 0;
         lastError = 0;
         lastTime = 0;
-
     }
 
     public double update(double position){
@@ -41,7 +40,6 @@ public class VelocityPID {
         if (lastTime==0){
             lastTime = currentTime;
             lastPosition = position;
-            lastError = error;
             return 0;
         }
 

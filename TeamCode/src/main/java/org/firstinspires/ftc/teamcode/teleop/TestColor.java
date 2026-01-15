@@ -9,30 +9,32 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums;
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
 import org.firstinspires.ftc.teamcode.util.Intake;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.COLORS;
+
 
 @Config
 @TeleOp
 public class TestColor extends LinearOpMode {
-    ColorSensor color_human,color_intake;
+    ColorSensor[] colors = new ColorSensor[4];
     @Override
     public void runOpMode() throws InterruptedException {
+        for (int i=1;i<=3;i++){
+            colors[i] = hardwareMap.get(ColorSensor.class, HardwareConfig.color_sensor+i);
+        }
 
-        color_human = hardwareMap.get(ColorSensor.class,HardwareConfig.color_sensor_human);
-        color_intake = hardwareMap.get(ColorSensor.class,HardwareConfig.color_sensor_intake);
         waitForStart();
 
         while(opModeIsActive() && !isStopRequested()) {
-            telemetry.addData("Color sensor intake: ", ColorFunctions.getColor(color_intake.red(),color_intake.green(),color_intake.blue()).val);
-            telemetry.addData("Color sensor human: ", ColorFunctions.getColor(color_human.red(),color_human.green(),color_human.blue()).val);
-            telemetry.addData("Red_intake: ",color_intake.red());
-            telemetry.addData("Green_intake: ",color_intake.green());
-            telemetry.addData("Blue_intake: ",color_intake.blue());
+            for(int i=1;i<=3;i++){
+                telemetry.addData("RED -> Color sensor "+i+": ",colors[i].red());
+                telemetry.addData("GREEN -> Color sensor "+i+": ",colors[i].green());
+                telemetry.addData("BLUE -> Color sensor "+i+": ",colors[i].blue());
+                telemetry.addData("RESULT -> Color sensor "+i+": ",ColorFunctions.getColor(colors[i].red(),colors[i].green(),colors[i].blue()));
 
-            telemetry.addData("Red_human: ",color_human.red());
-            telemetry.addData("Green_human: ",color_human.green());
-            telemetry.addData("Blue_human: ",color_human.blue());
+            }
 
 
 

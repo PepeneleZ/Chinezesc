@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.util.Constants_Enums;
 import org.firstinspires.ftc.teamcode.util.Robot;
 import org.firstinspires.ftc.teamcode.util.Turret;
 
@@ -20,8 +21,9 @@ public class SmallTriangle extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap,telemetry);
         timer = new ElapsedTime();
-        robot.sorting.fillMagazine();
+        robot.storage.setState(Constants_Enums.MOVING_STATES.WAITING_INTAKE);
         waitForStart();
+        sleep(2000);
         Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.FAR);
         while (!isStopRequested() && (timer.seconds()<20 || action==0)) {
             if(action==0){
@@ -31,11 +33,11 @@ public class SmallTriangle extends LinearOpMode {
                 action++;
             }
             if (action==1 && timer.seconds() >2){
-                robot.sorting.shoot();
+                robot.storage.setState(Constants_Enums.MOVING_STATES.SHOOTING);
                 action++;
             }
             if(action ==2 && timer.seconds()>8){
-                robot.sorting.shoot();
+                robot.storage.setState(Constants_Enums.MOVING_STATES.SHOOTING);
                 action++;
             }
             else if (action==3 && timer.seconds()>14){
@@ -45,7 +47,6 @@ public class SmallTriangle extends LinearOpMode {
             else if (action ==4 && timer.seconds()>14.6){
                 robot.driveTrain.setMotorPower(0, 0, 0, 0);
                 Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.STOPPED);
-                robot.sorting.rotate_elice(1);
                 action++;
             }
 

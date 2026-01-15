@@ -35,7 +35,7 @@ public class Turret implements Updateable{
     public static VERTICAL_TURRET_POSITIONS turret_vertical_state = VERTICAL_TURRET_POSITIONS.DOWN;
     public static double turret_vertical_position = 0;
 
-    public static VelocityPID velocityPID = new VelocityPID(0.0026d,0.0005d,0.0000004d);
+    public static VelocityPID velocityPID = new VelocityPID(0.0026d,0.0005d,0); // should be better without kD -> old kD: 0.0000004d
     public double power_of_launch;
     public double power_of_hrot;
     public static double changeable_target=1100;
@@ -43,10 +43,10 @@ public class Turret implements Updateable{
     public static final double admissible_error = 10;
     public static long ticks=0;
 
-    // (ticks/second * 2 * pi)/rezolutie - asta e omega
-    // inmultesc omega cu R - raza
-    // logica euristica - sa testezi chestii
-
+    // Discussion with the Big Alex -> Notes
+    // (ticks/second * 2 * pi)/motor_resolution - this is omega (angular velocity)
+    // multiply  omega with R - radius
+    // euristical logic - to test things
     public Turret(HardwareMap hwmap, Telemetry telemetry, VoltageSensor voltageSensor){
         turret_launch = hwmap.get(DcMotorEx.class, HardwareConfig.turret_launch);
         vertical_angle_servo = hwmap.get(Servo.class, HardwareConfig.vertical_angle_servo);
@@ -145,12 +145,13 @@ public class Turret implements Updateable{
 
 
     public void update_telemetry(){
-        //telemetry.addData("Unghiul Turetei", turret_angle);
+        //telemetry.addData("TURRET ANGLE: ", turret_angle);
         telemetry.addData("TURRET VELOCITY: ",velocityPID.currentVelocity);
         telemetry.addData("TURRET POS: ",turret_launch.getCurrentPosition());
         telemetry.addData("RUN TURRET PID",runPid);
         telemetry.addData("TURRET TARGET VELOCITY: ",velocityPID.targetVelocity);
         telemetry.addData("TURRET CHANGEABLE TARGET:", changeable_target);
+        telemetry.addLine("-----------------------------------------------------"); // separate the mechanisms to make the text easier to read
 
 
     }
