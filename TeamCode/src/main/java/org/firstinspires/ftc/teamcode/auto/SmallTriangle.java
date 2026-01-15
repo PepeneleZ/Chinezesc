@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.util.Robot;
 import org.firstinspires.ftc.teamcode.util.Turret;
 
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.TURRET_LAUNCH_SPEEDS;
+
 @Autonomous
 public class SmallTriangle extends LinearOpMode {
     public Robot robot;
@@ -20,7 +22,7 @@ public class SmallTriangle extends LinearOpMode {
         timer = new ElapsedTime();
         robot.sorting.fillMagazine();
         waitForStart();
-        Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.FAR);
+        Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.FAR);
         while (!isStopRequested() && (timer.seconds()<20 || action==0)) {
             if(action==0){
                 timer = new ElapsedTime();
@@ -42,7 +44,7 @@ public class SmallTriangle extends LinearOpMode {
             }
             else if (action ==4 && timer.seconds()>14.6){
                 robot.driveTrain.setMotorPower(0, 0, 0, 0);
-                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.STOPPED);
+                Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.STOPPED);
                 robot.sorting.rotate_elice(1);
                 action++;
             }

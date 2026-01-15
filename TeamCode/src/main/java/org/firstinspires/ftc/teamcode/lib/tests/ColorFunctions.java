@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.lib.tests;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import org.firstinspires.ftc.teamcode.util.Sorting.COLORS;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.COLORS;
 
 @Config
 public class ColorFunctions {

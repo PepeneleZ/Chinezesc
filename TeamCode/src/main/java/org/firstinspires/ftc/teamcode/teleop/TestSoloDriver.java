@@ -13,6 +13,10 @@ import org.firstinspires.ftc.teamcode.util.Robot;
 import org.firstinspires.ftc.teamcode.util.Sorting;
 import org.firstinspires.ftc.teamcode.util.Turret;
 
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.INTAKE_STATES;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOVING_STATES;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.TURRET_LAUNCH_SPEEDS;
+
 @Config
 @TeleOp
 public class TestSoloDriver extends LinearOpMode {
@@ -36,7 +40,7 @@ public class TestSoloDriver extends LinearOpMode {
             robot.driveTrain.drive(-controller1.leftStickX, controller1.leftStickY, controller1.rightStickX);
 
             if (controller1.cross.isPressed()){
-                robot.intake.toggle(Intake.INTAKE_STATES.SPITTING_OUT);
+                robot.intake.toggle(INTAKE_STATES.SPITTING_OUT);
             }
             if (controller1.dpadUp.isPressed()){
                 robot.sorting.transfer_ball();
@@ -49,24 +53,24 @@ public class TestSoloDriver extends LinearOpMode {
                 if (robot.sorting.motif >=8) robot.sorting.motif = 2;
             }
             if (controller1.bumperRight.isPressed()){
-                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.FAR);
+                Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.FAR);
             }
             if (controller1.bumperLeft.isPressed()){
-                Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
+                Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.CLOSE);
             }
 
 
             if (controller1.triangle.isPressed()) {
                 robot.intake.toggle();
-                if (robot.intake.intake_state == Intake.INTAKE_STATES.COLLECTING)
-                    robot.sorting.setNextState(Sorting.MOVING_STATES.WAITING_INTAKE);
+                if (robot.intake.intake_state == INTAKE_STATES.COLLECTING)
+                    robot.sorting.setNextState(MOVING_STATES.WAITING_INTAKE);
                 else
                     robot.sorting.resetStates();
             }
-            if (controller1.dpadDown.isPressed()&& Turret.turret_launcher_state != Turret.TURRET_LAUNCH_SPEEDS.STOPPED) {
+            if (controller1.dpadDown.isPressed()&& Turret.turret_launcher_state != TURRET_LAUNCH_SPEEDS.STOPPED) {
                 robot.sorting.shoot();
-                if (Turret.turret_launcher_state == Turret.TURRET_LAUNCH_SPEEDS.STOPPED)
-                    Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
+                if (Turret.turret_launcher_state == TURRET_LAUNCH_SPEEDS.STOPPED)
+                    Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.CLOSE);
             }
 
             if (controller1.square.isPressed())

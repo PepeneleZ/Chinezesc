@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.Controller;
@@ -13,17 +14,24 @@ import org.firstinspires.ftc.teamcode.util.Robot;
 import org.firstinspires.ftc.teamcode.util.Sorting;
 import org.firstinspires.ftc.teamcode.util.Turret;
 
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.INTAKE_STATES;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOVING_STATES;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.TURRET_LAUNCH_SPEEDS;
+
+
 @Config
 @TeleOp
 public class TestSorting extends LinearOpMode {
     public Sorting sorting;
     public Intake intake;
     public Controller controller1,controller2;
+    public VoltageSensor voltageSensor;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        voltageSensor = hardwareMap.getAll(VoltageSensor.class).get(0);
         intake = new Intake(hardwareMap);
-        sorting = new Sorting(hardwareMap,telemetry,intake);
+        sorting = new Sorting(hardwareMap,telemetry,intake,voltageSensor);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -65,17 +73,17 @@ public class TestSorting extends LinearOpMode {
 
             if (controller2.triangle.isPressed() || controller1.triangle.isPressed()) {
                 intake.toggle();
-                if (intake.intake_state == Intake.INTAKE_STATES.COLLECTING)
-                    sorting.setNextState(Sorting.MOVING_STATES.WAITING_INTAKE);
+                if (intake.intake_state == INTAKE_STATES.COLLECTING)
+                    sorting.setNextState(MOVING_STATES.WAITING_INTAKE);
                 else
                     sorting.resetStates();
             }
             if (controller2.cross.isPressed())
                 sorting.resetEverything();
-            if (controller2.circle.isPressed()&& Turret.turret_launcher_state!= Turret.TURRET_LAUNCH_SPEEDS.STOPPED) {
+            if (controller2.circle.isPressed()&& Turret.turret_launcher_state!= TURRET_LAUNCH_SPEEDS.STOPPED) {
                 sorting.shoot();
-                if (Turret.turret_launcher_state == Turret.TURRET_LAUNCH_SPEEDS.STOPPED)
-                    Turret.setTarget_rotation(Turret.TURRET_LAUNCH_SPEEDS.CLOSE);
+                if (Turret.turret_launcher_state == TURRET_LAUNCH_SPEEDS.STOPPED)
+                    Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.CLOSE);
             }
 
             if (controller2.square.isPressed())
@@ -96,7 +104,7 @@ public class TestSorting extends LinearOpMode {
                 sorting.transfer_ball();
             }
             if (controller2.dpadDown.isPressed()){
-                sorting.setNextState(Sorting.MOVING_STATES.WAITING_HUMAN_PLAYER);
+                sorting.setNextState(MOVING_STATES.WAITING_HUMAN_PLAYER);
             }
 
 

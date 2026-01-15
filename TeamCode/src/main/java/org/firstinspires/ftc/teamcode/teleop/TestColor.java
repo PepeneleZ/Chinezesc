@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
 import org.firstinspires.ftc.teamcode.util.Intake;
-import org.firstinspires.ftc.teamcode.util.Sorting.COLORS;
 
 @Config
 @TeleOp

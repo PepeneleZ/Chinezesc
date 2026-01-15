@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.INTAKE_STATES;
 
 public class Intake {
     public DcMotor intake;
@@ -14,13 +15,9 @@ public class Intake {
 
     public Intake(HardwareMap hwmap){
         intake = hwmap.get(DcMotorEx.class, HardwareConfig.intake);
-        //intake.setDirection(DcMotorSimple.Direction.REVERSE);
+        intake.setDirection(DcMotorSimple.Direction.REVERSE);
     }
-    public enum INTAKE_STATES{
-        STOPPED(0),COLLECTING(1),SPITTING_OUT(-1),SLIGHTLY_MOVING(0.4);
-        final double val;
-        INTAKE_STATES(double val){this.val = val;}
-    }
+
     public void toggle(){
         if (intake_state == INTAKE_STATES.COLLECTING || intake_state == INTAKE_STATES.SPITTING_OUT) {
             intake_state = INTAKE_STATES.STOPPED;

@@ -32,8 +32,11 @@ public class VelocityPID {
         long currentTime = System.nanoTime();
 
         double deltaTime = (currentTime-lastTime)*1e-9;
+
         currentVelocity = (position-lastPosition)/deltaTime;
         double error = targetVelocity-currentVelocity; // velocity error
+        double delta_e = lastError - error;
+        lastError = error;
 
         if (lastTime==0){
             lastTime = currentTime;
@@ -47,11 +50,10 @@ public class VelocityPID {
 
         lastTime = currentTime;
         lastPosition = position;
-        lastError = error;
 
         return (error*kP +
                 sumError*kI +
-                (error-lastError)/deltaTime*kD
+                (delta_e)/deltaTime*kD
                 +kF);
     }
 }
