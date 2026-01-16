@@ -48,13 +48,13 @@ public class Test extends LinearOpMode {
                 robot.intake.toggle(INTAKE_STATES.SPITTING_OUT);
             }
             if (controller1.dpadUp.isPressed()){
-                robot.storage.motif = Constants_Enums.MOTIFS.GPP;
+                robot.storage.motif = Constants_Enums.MOTIF.GPP;
             }
             if (controller1.dpadLeft.isPressed()){
-                robot.storage.motif = Constants_Enums.MOTIFS.PGP;
+                robot.storage.motif = Constants_Enums.MOTIF.PGP;
             }
             if (controller1.dpadRight.isPressed()){
-                robot.storage.motif = Constants_Enums.MOTIFS.PPG;
+                robot.storage.motif = Constants_Enums.MOTIF.PPG;
             }
             if (controller1.bumperRight.isPressed() || controller2.bumperRight.isPressed()){
                 //Turret.increaseChangeableTarget();

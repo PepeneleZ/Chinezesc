@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.Constants_Enums.COLORS;
 import org.firstinspires.ftc.teamcode.util.Constants_Enums.TRANSFER_POS;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOTIFS;
+import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOTIF;
 import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOVING_STATES;
 
 import org.firstinspires.ftc.teamcode.util.StorageSlot;
@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.util.StorageSlot;
 
 public class Storage implements Updateable {
     public StorageSlot[] storageSlots = new StorageSlot[4];
-    public MOTIFS motif = MOTIFS.PPG;
+    public MOTIF motif = MOTIF.PPG;
     public MOVING_STATES state = MOVING_STATES.NOTHING;
     public Intake intake;
     private ElapsedTime transferTimer;

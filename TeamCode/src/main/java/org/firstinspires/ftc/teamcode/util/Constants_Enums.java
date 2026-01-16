@@ -41,13 +41,11 @@ public class Constants_Enums {
         VERTICAL_TURRET_POSITIONS(double val){this.val = val;}
     }
 
-    public enum MOTIFS {
+    public enum MOTIF {
         GPP(1), PGP(2), PPG(3);
         final int val;
-        MOTIFS(int val){this.val = val;}
+        MOTIF(int val){this.val = val;}
     }
-
-
 
 
     /// /////////////// INTAKE /////////////// ///
