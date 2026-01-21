@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
+import org.firstinspires.ftc.teamcode.lib.Feedforward;
 import org.firstinspires.ftc.teamcode.util.Constants_Enums.TRANSFER_POS;
 import org.firstinspires.ftc.teamcode.util.Constants_Enums.TURRET_LAUNCH_SPEEDS;
 import org.firstinspires.ftc.teamcode.util.Constants_Enums.VERTICAL_TURRET_POSITIONS;
@@ -35,7 +36,7 @@ public class Turret implements Updateable{
     public static VERTICAL_TURRET_POSITIONS turret_vertical_state = VERTICAL_TURRET_POSITIONS.DOWN;
     public static double turret_vertical_position = 0;
 
-    public static VelocityPID velocityPID = new VelocityPID(0.0026d,0.0005d,0); // should be better without kD -> old kD: 0.0000004d
+    public static Feedforward feedforwardController = new Feedforward(0,0,0,0,0); // should be better without kD -> old kD: 0.0000004d
     public double power_of_launch;
     public double power_of_hrot;
     public static double changeable_target=1100;
@@ -59,7 +60,7 @@ public class Turret implements Updateable{
 
         turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
         //vertical_angle_servo.setPosition(turret_vertical_state.val);
-        velocityPID.resetPid();
+        feedforwardController.reset();
         this.voltageSensor = voltageSensor;
         setTarget_rotation(turret_launcher_state);
 
@@ -72,7 +73,7 @@ public class Turret implements Updateable{
             turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
         else
             turret_launcher_state = state;
-        velocityPID.setTargetVelocity(turret_launcher_state.val);
+        feedforwardController.setTarget(turret_launcher_state.val);
         runPid = true;
         ticks = 0;
     }
@@ -80,13 +81,13 @@ public class Turret implements Updateable{
 
 
     public static void setTarget_rotation(double target_rotation){
-        velocityPID.setTargetVelocity(target_rotation);
+        feedforwardController.setTarget(target_rotation);
         runPid = true;
         ticks=0;
 
     }
     public static void setSpecialTarget_rotation(){
-        velocityPID.setTargetVelocity(changeable_target);
+        feedforwardController.setTarget(changeable_target);
         runPid = true;
         ticks=0;
     }
@@ -122,7 +123,7 @@ public class Turret implements Updateable{
     @Override
     public void update() {
         turret_launch_position = turret_launch.getCurrentPosition();
-        power_of_launch = velocityPID.update(turret_launch_position);
+        power_of_launch = feedforwardController.update(turret_launch_position);
         power_of_launch = power_of_launch * (14/voltageSensor.getVoltage());
 
         if (runPid) {
@@ -130,7 +131,7 @@ public class Turret implements Updateable{
         }
         else
             turret_launch.setPower(0);
-        if (velocityPID.targetVelocity== TURRET_LAUNCH_SPEEDS.STOPPED.val && Math.abs(velocityPID.currentVelocity)<admissible_error && ticks>10){
+        if (feedforwardController.targetVelocity== TURRET_LAUNCH_SPEEDS.STOPPED.val && Math.abs(feedforwardController.currentVelocity)<admissible_error && ticks>10){
             runPid = false;
         }
         ticks++;
@@ -146,10 +147,10 @@ public class Turret implements Updateable{
 
     public void update_telemetry(){
         //telemetry.addData("TURRET ANGLE: ", turret_angle);
-        telemetry.addData("TURRET VELOCITY: ",velocityPID.currentVelocity);
+        telemetry.addData("TURRET VELOCITY: ",feedforwardController.currentVelocity);
         telemetry.addData("TURRET POS: ",turret_launch.getCurrentPosition());
         telemetry.addData("RUN TURRET PID",runPid);
-        telemetry.addData("TURRET TARGET VELOCITY: ",velocityPID.targetVelocity);
+        telemetry.addData("TURRET TARGET VELOCITY: ",feedforwardController.targetVelocity);
         telemetry.addData("TURRET CHANGEABLE TARGET:", changeable_target);
         telemetry.addLine("-----------------------------------------------------"); // separate the mechanisms to make the text easier to read
 

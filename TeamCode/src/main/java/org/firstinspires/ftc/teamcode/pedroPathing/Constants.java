@@ -16,6 +16,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
 
+
+// model auto
+//[(56.0, 8.0), (60.700, 38.700), (21.0, 35.0), (25.500, 51.0), (67.0, 49.500), (72.0, 72.0), (70.400, 90.0), (50.0, 54.400), (25.200, 60.300), (22.0, 71.700), (72.0, 72.0), (87.500, 48.200), (5.200, 45.500), (9.900, 60.300), (56.600, 67.0), (72.0, 72.0)]
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(10);

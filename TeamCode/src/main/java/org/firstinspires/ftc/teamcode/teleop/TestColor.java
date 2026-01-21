@@ -9,34 +9,25 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums;
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
 import org.firstinspires.ftc.teamcode.util.Intake;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.COLORS;
-
 
 @Config
 @TeleOp
 public class TestColor extends LinearOpMode {
-    ColorSensor[] colors = new ColorSensor[4];
+    ColorSensor color_human,color_intake;
     @Override
     public void runOpMode() throws InterruptedException {
-        for (int i=1;i<=3;i++){
-            colors[i] = hardwareMap.get(ColorSensor.class, HardwareConfig.color_sensor+i);
-        }
 
+        color_intake = hardwareMap.get(ColorSensor.class,HardwareConfig.color_sensor);
+        color_intake.enableLed(true);
         waitForStart();
 
         while(opModeIsActive() && !isStopRequested()) {
-            for(int i=1;i<=3;i++){
-                telemetry.addData("RED -> Color sensor "+i+": ",colors[i].red());
-                telemetry.addData("GREEN -> Color sensor "+i+": ",colors[i].green());
-                telemetry.addData("BLUE -> Color sensor "+i+": ",colors[i].blue());
-                telemetry.addData("RESULT -> Color sensor "+i+": ",ColorFunctions.getColor(colors[i].red(),colors[i].green(),colors[i].blue()));
-
-            }
-
-
+            telemetry.addData("Color sensor: ", ColorFunctions.getColor(color_intake.red(),color_intake.green(),color_intake.blue()).val);
+            telemetry.addData("Red: ",color_intake.red());
+            telemetry.addData("Green: ",color_intake.green());
+            telemetry.addData("Blue: ",color_intake.blue());
 
             telemetry.update();
         }

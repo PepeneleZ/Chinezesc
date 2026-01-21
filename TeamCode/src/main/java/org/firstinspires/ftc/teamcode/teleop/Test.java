@@ -91,13 +91,13 @@ public class Test extends LinearOpMode {
 //            }
 
             if (controller2.dpadRight.isPressed()){
-                robot.storage.transfer_ball(1,true);
+                robot.storage.toggle_transfer(1,true);
             }
             if (controller2.dpadLeft.isPressed()){
-                robot.storage.transfer_ball(2,true);
+                robot.storage.toggle_transfer(2,true);
             }
             if (controller2.dpadDown.isPressed()){
-                robot.storage.transfer_ball(3,true);
+                robot.storage.toggle_transfer(3,true);
             }
 
             controller1.update();
