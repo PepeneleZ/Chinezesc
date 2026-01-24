@@ -20,9 +20,9 @@ import org.firstinspires.ftc.teamcode.lib.VelocityPID;
 @Config
 public class Turret implements Updateable{
 
-    private DcMotorEx turret_launch;
+    public DcMotorEx turret_launch;
     private static Servo vertical_angle_servo;
-    private final VoltageSensor voltageSensor;
+   // private final VoltageSensor voltageSensor;
     private Telemetry telemetry;
 
 
@@ -48,7 +48,7 @@ public class Turret implements Updateable{
     // (ticks/second * 2 * pi)/motor_resolution - this is omega (angular velocity)
     // multiply  omega with R - radius
     // euristical logic - to test things
-    public Turret(HardwareMap hwmap, Telemetry telemetry, VoltageSensor voltageSensor){
+    public Turret(HardwareMap hwmap, Telemetry telemetry){//, VoltageSensor voltageSensor){
         turret_launch = hwmap.get(DcMotorEx.class, HardwareConfig.turret_launch);
         vertical_angle_servo = hwmap.get(Servo.class, HardwareConfig.vertical_angle_servo);
 
@@ -61,7 +61,7 @@ public class Turret implements Updateable{
         turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
         //vertical_angle_servo.setPosition(turret_vertical_state.val);
         feedforwardController.reset();
-        this.voltageSensor = voltageSensor;
+        //this.voltageSensor = voltageSensor;
         setTarget_rotation(turret_launcher_state);
 
 
@@ -77,20 +77,20 @@ public class Turret implements Updateable{
         runPid = true;
         ticks = 0;
     }
-
-
-
-    public static void setTarget_rotation(double target_rotation){
-        feedforwardController.setTarget(target_rotation);
+    public static void setTarget_rotation(int target){
+        if (target == TURRET_LAUNCH_SPEEDS.FAR.val)
+            turret_launcher_state = TURRET_LAUNCH_SPEEDS.FAR;
+        else if (target == TURRET_LAUNCH_SPEEDS.STOPPED.val)
+            turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
+        else if (target == TURRET_LAUNCH_SPEEDS.CLOSE.val)
+            turret_launcher_state = TURRET_LAUNCH_SPEEDS.CLOSE;
+        else
+            turret_launcher_state = TURRET_LAUNCH_SPEEDS.CUSTOM;
+        feedforwardController.setTarget(target);
         runPid = true;
-        ticks=0;
+        ticks = 0;
+    }
 
-    }
-    public static void setSpecialTarget_rotation(){
-        feedforwardController.setTarget(changeable_target);
-        runPid = true;
-        ticks=0;
-    }
     public static void setVertical_position(double target_position){
         vertical_angle_servo.setPosition(target_position);
         turret_vertical_position = target_position;
@@ -124,16 +124,16 @@ public class Turret implements Updateable{
     public void update() {
         turret_launch_position = turret_launch.getCurrentPosition();
         power_of_launch = feedforwardController.update(turret_launch_position);
-        power_of_launch = power_of_launch * (14/voltageSensor.getVoltage());
+        //power_of_launch = power_of_launch * (14/voltageSensor.getVoltage());
 
         if (runPid) {
             turret_launch.setPower(power_of_launch);
         }
         else
             turret_launch.setPower(0);
-        if (feedforwardController.targetVelocity== TURRET_LAUNCH_SPEEDS.STOPPED.val && Math.abs(feedforwardController.currentVelocity)<admissible_error && ticks>10){
-            runPid = false;
-        }
+//        if (feedforwardController.targetVelocity== TURRET_LAUNCH_SPEEDS.STOPPED.val && Math.abs(feedforwardController.currentVelocity)<admissible_error && ticks>10){
+//            runPid = false;
+//        }
         ticks++;
 
 
@@ -148,6 +148,7 @@ public class Turret implements Updateable{
     public void update_telemetry(){
         //telemetry.addData("TURRET ANGLE: ", turret_angle);
         telemetry.addData("TURRET VELOCITY: ",feedforwardController.currentVelocity);
+        telemetry.addData("TURRET ACCELERATION: ",feedforwardController.acceleration);
         telemetry.addData("TURRET POS: ",turret_launch.getCurrentPosition());
         telemetry.addData("RUN TURRET PID",runPid);
         telemetry.addData("TURRET TARGET VELOCITY: ",feedforwardController.targetVelocity);

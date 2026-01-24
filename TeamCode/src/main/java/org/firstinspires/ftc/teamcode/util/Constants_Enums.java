@@ -29,7 +29,7 @@ public class Constants_Enums {
 
     /// /////////////// TURRET /////////////// ///
     public enum TURRET_LAUNCH_SPEEDS{
-        CLOSE(1100),FAR(1645),STOPPED(0);
+        CLOSE(1100),FAR(1645),STOPPED(0), CUSTOM(1000);
         final double val;
         TURRET_LAUNCH_SPEEDS(double val) {
             this.val = val;

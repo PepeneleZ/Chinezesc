@@ -11,13 +11,15 @@ public class HardwareConfig {
     public static final String LF = "LF";
     public static final String LB = "LB";
 
-    public static final String turret_hrot = "turret_hrot";
+    public static final String turret_hrot1 = "turret_hrot1";
+    public static final String turret_hrot2 = "turret_hrot2";
+
+    public static final String turret_angle = "turret_angle";
+
 
     public static final String intake = "intake";
 
     public static final String transfer = "transfer";
-
-    public static final String encoder_launcher_hrot = "encoder_launcher_hrot";
 
     public static final String color_sensor = "color_sensor";
 

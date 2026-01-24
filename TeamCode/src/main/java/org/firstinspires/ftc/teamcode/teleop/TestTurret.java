@@ -8,34 +8,42 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.Controller;
-import org.firstinspires.ftc.teamcode.util.Drivetrain;
-import org.firstinspires.ftc.teamcode.util.Intake;
-import org.firstinspires.ftc.teamcode.util.Robot;
-//import org.firstinspires.ftc.teamcode.util.Sorting;
 import org.firstinspires.ftc.teamcode.util.Turret;
 
-@Config
+import java.io.CharArrayReader;
+
 @TeleOp
-public class ChasisOnly extends LinearOpMode {
-    public Controller controller1;
-    public Drivetrain drive;
+@Config
+public class TestTurret extends LinearOpMode {
+
+    Turret turret;
+    public static int target=0;
+    public static boolean runOnPower = false;
+    public static double power = 0;
+    Controller controller1;
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
+        turret = new Turret(hardwareMap, telemetry);
         controller1 = new Controller(gamepad1);
-
-        drive = new Drivetrain(hardwareMap);
-
         waitForStart();
+        while(opModeIsActive() && !isStopRequested()){
+            if (controller1.triangle.isPressed())
+                Turret.setTarget_rotation(target);
+            if (controller1.cross.isPressed())
+                Turret.setTarget_rotation(0);
+            if (controller1.square.isPressed())
+                runOnPower = !runOnPower;
+            if (runOnPower){
+                Turret.runPid = false;
+                turret.turret_launch.setPower(power);
+            }
 
-        while(opModeIsActive() && !isStopRequested()) {
-            drive.drive(-controller1.leftStickX, controller1.leftStickY, controller1.rightStickX);
-
+            turret.update();
             controller1.update();
             telemetry.update();
+
         }
     }
 }
