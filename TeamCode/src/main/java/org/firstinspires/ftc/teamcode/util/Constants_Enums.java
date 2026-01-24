@@ -24,6 +24,12 @@ public class Constants_Enums {
         }
     }
 
+    public enum MOTIF{
+        GPP(1), PGP(2), PPG(3);
+        public final int val;
+        MOTIF(int val){this.val = val;}
+    }
+
 
 
 
