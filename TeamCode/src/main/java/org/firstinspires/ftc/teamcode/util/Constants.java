@@ -77,12 +77,13 @@ public class Constants {
     public static final double turretCenterOffsetY = 3d;
     public static final double turretCenterOffsetZ = 5d;
     public static final double turretRadius = 5.09;
-    public static final double deltaTurretHorizontalAngle =Math.toRadians(30);
+    //public static final double deltaTurretHorizontalAngle =Math.toRadians(30);
     public static final double turretHorizontalAngle = Math.toRadians(120);
     public static final double turretVerticalAngle = Math.toRadians(50);
     public static final double deltaTurretVerticalAngle = Math.toRadians(20);
     public static final double turretTotalHorizontalTicks = 8192;
     public static final double full_circle = Math.PI*2;
+
 
 
     /// Field ///

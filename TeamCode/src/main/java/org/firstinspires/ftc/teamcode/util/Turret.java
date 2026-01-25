@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.robotcore.hardware.CRServo;
+import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -22,15 +22,13 @@ public class Turret implements Updateable{
     public DcMotorEx turret_launch;
     public Pose turret_pose;
     private static Servo vertical_angle_servo;
-    private static CRServo left_hrot_servo, right_hrot_servo;
-    private static DcMotorEx hrot_encoder;
+    private static Servo left_hrot_servo, right_hrot_servo;
+    //private static DcMotorEx hrot_encoder;
    // private final VoltageSensor voltageSensor;
     private Telemetry telemetry;
 
 
     public double turret_launch_position = 0;
-    public double turret_horizontal_angle = 0;
-    public double horizontal_target=0;
     public static TURRET_LAUNCH_SPEEDS turret_launcher_state=TURRET_LAUNCH_SPEEDS.STOPPED;
     public static VERTICAL_TURRET_POSITIONS turret_vertical_state = VERTICAL_TURRET_POSITIONS.DOWN;
     public static Pose lebronPose = Constants.lebronPoseRed;
@@ -48,10 +46,10 @@ public class Turret implements Updateable{
     // euristical logic - to test things
     public Turret(HardwareMap hwmap, Telemetry telemetry){//, VoltageSensor voltageSensor){
         turret_launch = hwmap.get(DcMotorEx.class, HardwareConfig.turret_launch);
-        hrot_encoder = hwmap.get(DcMotorEx.class, HardwareConfig.back_lifter);
+        //hrot_encoder = hwmap.get(DcMotorEx.class, HardwareConfig.back_lifter);
         vertical_angle_servo = hwmap.get(Servo.class, HardwareConfig.vertical_angle_servo);
-        left_hrot_servo = hwmap.get(CRServo.class, HardwareConfig.turret_hrot1);
-        right_hrot_servo = hwmap.get(CRServo.class,HardwareConfig.turret_hrot2);
+        left_hrot_servo = hwmap.get(Servo.class, HardwareConfig.turret_hrot1);
+        right_hrot_servo = hwmap.get(Servo.class,HardwareConfig.turret_hrot2);
 
         turret_launch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret_launch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -122,16 +120,14 @@ public class Turret implements Updateable{
 
 
     public double getHorizontalPositionFromAngle(double angle){ //in radians
-        return (angle/(Constants.full_circle))
-                * Constants.turretTotalHorizontalTicks;
+        return (angle-1/2.0) / Constants.turretHorizontalAngle;
     }
     public double getHorizontalAngleFromPosition(double position){
-        return (position/Constants.turretTotalHorizontalTicks)
-                *Constants.full_circle;
+        return (position * 1/2.0) / Constants.turretHorizontalAngle;
     }
-    public double getHorizontalAngle(){
-        return (turret_horizontal_angle/Constants.turretTotalHorizontalTicks)
-                *Constants.full_circle;
+    public double getHorizontalAngle(){ // should return a normalized angle
+        return (left_hrot_servo.getPosition() / Constants.turretHorizontalAngle) + 1/2.0 ;
+
     }
     public void aimLebron() {
         aimVerticalLebron();
@@ -147,36 +143,27 @@ public class Turret implements Updateable{
     }
 
     public void aimHorizontalLebron(){
-        double deltaX = lebronPose.getX()-turret_pose.getX();
-        double deltaY = lebronPose.getY()-turret_pose.getY();
-        double horizontal_angle = Math.atan2(deltaY,deltaX);
-        horizontal_target = turret_horizontal_angle+horizontal_angle;
+        Vector turretLookVector, lebronVector;
+        Pose poseFromRobotToLebron;
+        poseFromRobotToLebron = new Pose(lebronPose.getX()-turret_pose.getX(), lebronPose.getY()-turret_pose.getY(),0);
+        turretLookVector = turret_pose.getHeadingAsUnitVector();
+        lebronVector = new Vector(poseFromRobotToLebron);
 
-        if (horizontal_target>Constants.turretTotalHorizontalTicks){
-            horizontal_target%=Constants.turretHorizontalAngle;
-        }
+
+        double delta_horizontal_angle = turretLookVector.dot(lebronVector);
+        double horizontal_target = Range.clip(left_hrot_servo.getPosition()+getHorizontalPositionFromAngle(delta_horizontal_angle),0,1);
+        left_hrot_servo.setPosition(horizontal_target);
+        right_hrot_servo.setPosition(horizontal_target);
     }
 
-    public void unwind(){
-        horizontal_target = 0;
-    }
 
 //28
 
     @Override
     public void update() {
         turret_launch_position = turret_launch.getCurrentPosition();
-        turret_horizontal_angle = hrot_encoder.getCurrentPosition();
         power_of_launch = feedforwardController.update(turret_launch_position);
         //power_of_launch = power_of_launch * (14/voltageSensor.getVoltage());
-        if (Math.abs(horizontal_target-turret_horizontal_angle)>admissible_error){
-            double power = (horizontal_target>turret_horizontal_angle?1:-1);
-            left_hrot_servo.setPower(power);
-            right_hrot_servo.setPower(power);
-        }
-        if (turret_horizontal_angle>Constants.turretTotalHorizontalTicks*1.05)
-            horizontal_target = 0;
-
         if (runPid) {
             turret_launch.setPower(power_of_launch);
         }
