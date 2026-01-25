@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.lib.tests;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 @Config
+@TeleOp
 public class TestMotor extends LinearOpMode {
 
     static public double speed = 0;

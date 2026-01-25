@@ -4,11 +4,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.COLORS;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOTIF;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOVING_STATES;
+import org.firstinspires.ftc.teamcode.util.Constants.COLORS;
+import org.firstinspires.ftc.teamcode.util.Constants.MOTIF;
+import org.firstinspires.ftc.teamcode.util.Constants.MOVING_STATES;
 
-
+@Deprecated
 public class StorageVer2 implements Updateable {
     public StorageSlot[] storageSlots = new StorageSlot[3]; // am schimbat pana la urma sa fie de la 0 la 2 pt simplicity sake
 

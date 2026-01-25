@@ -78,8 +78,8 @@ public class MultiplePIDF {
         resetPid();
         targetPos = target;
     }
-    public void setTargetWithoutResetting(double delta){
-        targetPos += delta;
+    public void setTargetWithoutResetting(double target){
+        targetPos = target;
     }
 
     public double getError(){

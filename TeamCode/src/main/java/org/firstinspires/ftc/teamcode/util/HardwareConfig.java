@@ -11,18 +11,18 @@ public class HardwareConfig {
     public static final String LF = "LF";
     public static final String LB = "LB";
 
-    public static final String turret_hrot1 = "turret_hrot1";
-    public static final String turret_hrot2 = "turret_hrot2";
+    public static final String turret_hrot1 = "turret_hrot_servo1";
+    public static final String turret_hrot2 = "turret_hrot_servo2";
 
     public static final String turret_angle = "turret_angle";
 
 
     public static final String intake = "intake";
-
+    public static final String sorting = "sorting";
     public static final String transfer = "transfer";
 
     public static final String color_sensor = "color_sensor";
-
+    public static final String color_sensor_intake = "color_sensor_intake";
 
     public static final String imu = "imu";
     public static final String pinpoint_calculator = "pinpointCalculator";

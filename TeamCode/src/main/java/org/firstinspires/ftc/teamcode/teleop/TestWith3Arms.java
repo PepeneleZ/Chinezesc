@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.lib.Controller;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.Robot;
-import org.firstinspires.ftc.teamcode.util.Sorting;
 import org.firstinspires.ftc.teamcode.util.Turret;
 
 import org.firstinspires.ftc.teamcode.util.Constants.INTAKE_STATES;
@@ -18,7 +17,8 @@ import org.firstinspires.ftc.teamcode.util.Constants.TURRET_LAUNCH_SPEEDS;
 
 @Config
 @TeleOp
-public class Test extends LinearOpMode {
+@Deprecated
+public class TestWith3Arms extends LinearOpMode {
     public Robot robot;
     public Controller controller1,controller2;
 
@@ -48,13 +48,13 @@ public class Test extends LinearOpMode {
                 robot.intake.toggle(INTAKE_STATES.SPITTING_OUT);
             }
             if (controller1.dpadUp.isPressed()){
-                Sorting.motif = Constants.MOTIF.GPP;
+                robot.storage.motif = Constants.MOTIF.GPP;
             }
             if (controller1.dpadLeft.isPressed()){
-                Sorting.motif = Constants.MOTIF.PGP;
+                robot.storage.motif = Constants.MOTIF.PGP;
             }
             if (controller1.dpadRight.isPressed()){
-                Sorting.motif = Constants.MOTIF.PPG;
+                robot.storage.motif = Constants.MOTIF.PPG;
             }
             if (controller1.bumperRight.isPressed() || controller2.bumperRight.isPressed()){
                 //Turret.increaseChangeableTarget();
@@ -69,18 +69,18 @@ public class Test extends LinearOpMode {
             if (controller2.triangle.isPressed() || controller1.triangle.isPressed()) {
                 robot.intake.toggle();
                 if (robot.intake.intake_state == INTAKE_STATES.COLLECTING)
-                    robot.sorting.setNextState(MOVING_STATES.WAITING_INTAKE);
+                    robot.storage.setState(MOVING_STATES.WAITING_INTAKE);
             }
-            if (controller2.square.isPressed())
-                robot.sorting.rotate_elice(1);
+            if (controller2.circle.isPressed())
+                robot.storage.shift++;
             if (controller2.cross.isPressed()){
-                robot.sorting.resetEverything();
+                robot.storage.shift = 0;
             }
-            if (controller2.circle.isPressed() || controller1.cross.isPressed()) {
+            if (controller2.square.isPressed() || controller1.cross.isPressed()) {
                 if (Turret.turret_launcher_state == TURRET_LAUNCH_SPEEDS.STOPPED)
                     Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.CLOSE);
                 else
-                    robot.sorting.setNextState(MOVING_STATES.SHOOTING);
+                    robot.storage.setState(MOVING_STATES.SHOOTING);
             }
 //            if (controller2.dpadDown.isPressed()){
 //                robot.sorting.sort_balls();
@@ -91,16 +91,14 @@ public class Test extends LinearOpMode {
 //            }
 
             if (controller2.dpadRight.isPressed()){
-                robot.sorting.shift++;
+                robot.storage.toggle_transfer(1,true);
             }
             if (controller2.dpadLeft.isPressed()){
-                robot.sorting.shift=0;
+                robot.storage.toggle_transfer(2,true);
             }
             if (controller2.dpadDown.isPressed()){
-                robot.sorting.respectMotif = !robot.sorting.respectMotif;
+                robot.storage.toggle_transfer(3,true);
             }
-            if (controller2.dpadUp.isPressed())
-                robot.sorting.transfer_ball(true);
 
             controller1.update();
             controller2.update();

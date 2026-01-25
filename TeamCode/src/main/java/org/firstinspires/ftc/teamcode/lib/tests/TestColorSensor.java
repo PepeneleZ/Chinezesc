@@ -1,20 +1,15 @@
-package org.firstinspires.ftc.teamcode.teleop;
+package org.firstinspires.ftc.teamcode.lib.tests;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.bylazar.field.Line;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
-import org.firstinspires.ftc.teamcode.util.Intake;
 
 @Config
 @TeleOp
-public class TestColor extends LinearOpMode {
+public class TestColorSensor extends LinearOpMode {
     ColorSensor color_human,color_intake;
     @Override
     public void runOpMode() throws InterruptedException {

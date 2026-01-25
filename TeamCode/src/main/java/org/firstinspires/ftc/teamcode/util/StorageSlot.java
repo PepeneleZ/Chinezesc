@@ -5,9 +5,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.COLORS;
+import org.firstinspires.ftc.teamcode.util.Constants.COLORS;
 
-
+@Deprecated
 public class StorageSlot {
     public ColorSensor colorSensor;
     public Servo transferServo;
@@ -18,7 +18,7 @@ public class StorageSlot {
     public StorageSlot(HardwareMap hardwareMap, int index){
         colorSensor = hardwareMap.get(ColorSensor.class, HardwareConfig.color_sensor+index);
         transferServo = hardwareMap.get(Servo.class, HardwareConfig.transfer+index);
-        transferServo.setPosition(Constants_Enums.TRANSFER_POS.DOWN.val);
+        transferServo.setPosition(Constants.TRANSFER_POS.DOWN.val);
         sensorEnabled = true;
     }
 
@@ -33,17 +33,17 @@ public class StorageSlot {
     }
     public void toggle_transfer(){
         if (isUP)
-            transferServo.setPosition(Constants_Enums.TRANSFER_POS.UP.val);
+            transferServo.setPosition(Constants.TRANSFER_POS.UP.val);
         else
-            transferServo.setPosition(Constants_Enums.TRANSFER_POS.DOWN.val);
+            transferServo.setPosition(Constants.TRANSFER_POS.DOWN.val);
         isUP = !isUP;
     }
     public void toggle_transfer(boolean isUP){
         this.isUP = isUP;
         if (isUP)
-            transferServo.setPosition(Constants_Enums.TRANSFER_POS.UP.val);
+            transferServo.setPosition(Constants.TRANSFER_POS.UP.val);
         else
-            transferServo.setPosition(Constants_Enums.TRANSFER_POS.DOWN.val);
+            transferServo.setPosition(Constants.TRANSFER_POS.DOWN.val);
     }
 
     public void toggle_sensor(){

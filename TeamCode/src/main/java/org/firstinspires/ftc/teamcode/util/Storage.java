@@ -1,20 +1,15 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.COLORS;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.TRANSFER_POS;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOTIF;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.MOVING_STATES;
-
-import org.firstinspires.ftc.teamcode.util.StorageSlot;
+import org.firstinspires.ftc.teamcode.util.Constants.COLORS;
+import org.firstinspires.ftc.teamcode.util.Constants.MOTIF;
+import org.firstinspires.ftc.teamcode.util.Constants.MOVING_STATES;
 
 
-
+@Deprecated
 public class Storage implements Updateable {
     public StorageSlot[] storageSlots = new StorageSlot[4];
     public MOTIF motif = MOTIF.PPG;
@@ -57,7 +52,7 @@ public class Storage implements Updateable {
             case WAITING_INTAKE:
                 if(isFull()){
                     state = MOVING_STATES.NOTHING;
-                    intake.toggle(Constants_Enums.INTAKE_STATES.STOPPED);
+                    intake.toggle(Constants.INTAKE_STATES.STOPPED);
                 }
                 break;
 
@@ -113,7 +108,7 @@ public class Storage implements Updateable {
         transferTimer.startTime();
         if(!storageSlots[index].isUP)
             return;
-        if(Turret.turret_launcher_state != Constants_Enums.TURRET_LAUNCH_SPEEDS.STOPPED || Turret.feedforwardController.targetVelocity>500) {
+        if(Turret.turret_launcher_state != Constants.TURRET_LAUNCH_SPEEDS.STOPPED || Turret.feedforwardController.targetVelocity>500) {
             storageSlots[index].color = COLORS.EMPTY;
         }
 
@@ -124,7 +119,7 @@ public class Storage implements Updateable {
         transferTimer.startTime();
         if(!toggle)
             return;
-        if(Turret.turret_launcher_state != Constants_Enums.TURRET_LAUNCH_SPEEDS.STOPPED || Turret.feedforwardController.targetVelocity>500) {
+        if(Turret.turret_launcher_state != Constants.TURRET_LAUNCH_SPEEDS.STOPPED || Turret.feedforwardController.targetVelocity>500) {
             storageSlots[index].color = COLORS.EMPTY;
         }
 

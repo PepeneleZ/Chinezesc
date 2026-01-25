@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.util;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
-import org.firstinspires.ftc.teamcode.util.Constants_Enums.INTAKE_STATES;
+
+import org.firstinspires.ftc.teamcode.util.Constants.INTAKE_STATES;
 
 public class Intake {
     public DcMotor intake;

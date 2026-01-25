@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 @TeleOp
-public class TestSensor extends LinearOpMode {
+public class TestTouchSensor extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         TouchSensor sensor = hardwareMap.get(TouchSensor.class, "touch sensor");
