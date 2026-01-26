@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -19,8 +18,8 @@ public class Lifter implements Updateable{
     Telemetry telemetry;
 
     public Lifter(HardwareMap hwmap, Telemetry telemetry){
-        front = hwmap.get(DcMotorEx.class, HardwareConfig.front_lifter);
-        back = hwmap.get(DcMotorEx.class, HardwareConfig.back_lifter);
+        front = hwmap.get(DcMotorEx.class, HardwareConfig.left_lifter);
+        back = hwmap.get(DcMotorEx.class, HardwareConfig.right_lifter);
         pid = new PIDF(pidfCoefficients);
 
         front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

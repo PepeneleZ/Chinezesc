@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.util;
 public class HardwareConfig {
     public static final String turret_launch = "turret_launch";
 
-    public static final String back_lifter = "back_lifter";
-    public static final String front_lifter = "front_lifter";
+    public static final String right_lifter = "right_lifter";
+    public static final String left_lifter = "left_lifter";
 
     public static final String RF = "RF";
     public static final String RB = "RB";
