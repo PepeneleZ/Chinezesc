@@ -35,14 +35,14 @@ public class Constants {
 
     /// /////////////// TURRET /////////////// ///
     public enum TURRET_LAUNCH_SPEEDS{
-        CLOSE(1100),FAR(1645),STOPPED(0), CUSTOM(1000);
+        CLOSE(20),FAR(50),STOPPED(0), CUSTOM(40);
         final double val;
         TURRET_LAUNCH_SPEEDS(double val) {
             this.val = val;
         }
     }
     public enum VERTICAL_TURRET_POSITIONS{
-        DOWN(0),MIDDLE(0.2),UP(0.4), OTHER(0.3333);
+        DOWN(0.7),MIDDLE(0.85),UP(1), OTHER(0.9);
         final double val;
         VERTICAL_TURRET_POSITIONS(double val){this.val = val;}
     }
@@ -79,8 +79,9 @@ public class Constants {
     public static final double turretRadius = 5.09;
     //public static final double deltaTurretHorizontalAngle =Math.toRadians(30);
     public static final double turretHorizontalAngle = Math.toRadians(120);
-    public static final double turretVerticalAngle = Math.toRadians(50);
-    public static final double deltaTurretVerticalAngle = Math.toRadians(20);
+    public static final double turretVerticalAngle = Math.toRadians(40);
+    public static final double turretVerticalMinimumPower = 0.7;
+    public static final double deltaTurretVerticalAngle = Math.toRadians(30);
     public static final double turretTotalHorizontalTicks = 8192;
     public static final double full_circle = Math.PI*2;
 

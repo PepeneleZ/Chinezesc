@@ -91,16 +91,20 @@ public class Test extends LinearOpMode {
 //            }
 
             if (controller2.dpadRight.isPressed()){
-                robot.sorting.shift++;
+                //robot.sorting.shift++;
+                robot.sorting.rotate_elice(1);
             }
             if (controller2.dpadLeft.isPressed()){
-                robot.sorting.shift=0;
+                //robot.sorting.shift=0;
+                robot.sorting.rotate_elice(-1);
             }
             if (controller2.dpadDown.isPressed()){
-                robot.sorting.respectMotif = !robot.sorting.respectMotif;
+                //robot.sorting.respectMotif = !robot.sorting.respectMotif
+                robot.sorting.rotate_elice(-0.5);
             }
             if (controller2.dpadUp.isPressed())
                 robot.sorting.transfer_ball(true);
+                //robot.sorting.rotate_elice(0.5);
 
             controller1.update();
             controller2.update();

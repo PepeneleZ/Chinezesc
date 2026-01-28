@@ -18,8 +18,11 @@ public class HardwareConfig {
 
 
     public static final String intake = "intake";
-    public static final String sorting = "sorting";
-    public static final String transfer = "transfer";
+    public static final String sorting1 = "sorting1";
+    public static final String sorting2 = "sorting2";
+    public static final String transfer_servo1 = "transfer_servo1";
+    public static final String transfer_servo2 = "transfer_servo2";
+
 
     public static final String color_sensor = "color_sensor";
     public static final String color_sensor_intake = "color_sensor_intake";

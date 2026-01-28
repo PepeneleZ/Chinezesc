@@ -21,7 +21,7 @@ public class SmallTriangle extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap,telemetry);
         timer = new ElapsedTime();
-        robot.storage.setState(Constants.MOVING_STATES.WAITING_INTAKE);
+        robot.sorting.setNextState(Constants.MOVING_STATES.WAITING_INTAKE);
         waitForStart();
         sleep(2000);
         Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.FAR);
@@ -33,11 +33,11 @@ public class SmallTriangle extends LinearOpMode {
                 action++;
             }
             if (action==1 && timer.seconds() >2){
-                robot.storage.setState(Constants.MOVING_STATES.SHOOTING);
+                robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
                 action++;
             }
             if(action ==2 && timer.seconds()>8){
-                robot.storage.setState(Constants.MOVING_STATES.SHOOTING);
+                robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
                 action++;
             }
             else if (action==3 && timer.seconds()>14){

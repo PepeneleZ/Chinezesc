@@ -29,11 +29,14 @@ public class Robot implements Updateable{
 
     public Robot(HardwareMap hwmap, Telemetry telemetry){
         voltageSensor = hwmap.getAll(VoltageSensor.class).get(0);
+        turret = new Turret(hwmap,telemetry);
         driveTrain = new Drivetrain(hwmap);
         intake = new Intake(hwmap);
         sorting = new Sorting(hwmap,telemetry,intake,voltageSensor);
         limelight = new Limelight(hwmap,telemetry);
         pinpointLocalizer = new PinpointLocalizer(hwmap, Constants.localizerConstants);
+
+        pinpointLocalizer.setStartPose(new Pose(72,72,0));
         this.telemetry = telemetry;
 
         //storage = new Storage(hwmap,telemetry, intake);
@@ -110,8 +113,13 @@ public class Robot implements Updateable{
         turret.update();
         intake.update();
         limelight.update();
-
         robotPose = pinpointLocalizer.getPose();
+
+
+        sorting.telemetryData();
+        turret.update_telemetry();
+        //telemetryData();
+
     }
 
     public void telemetryData(){
@@ -126,7 +134,7 @@ public class Robot implements Updateable{
         telemetry.addData(name+"  X:",pose.getX());
         telemetry.addData(name+"  Y:",pose.getY());
         telemetry.addData(name+"  HEADING:",pose.getHeading());
-        telemetry.addLine("-----------------------------------------------------"); // separate the mechanisms to make the text easier to read
+        telemetry.addLine("--------------------------------------------------"); // separate the mechanisms to make the text easier to read
 
 
     }

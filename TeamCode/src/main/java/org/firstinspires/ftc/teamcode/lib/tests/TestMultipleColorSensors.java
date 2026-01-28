@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+import org.firstinspires.ftc.teamcode.lib.ColorFunctions;
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
 
 
@@ -26,7 +27,7 @@ public class TestMultipleColorSensors extends LinearOpMode {
                 telemetry.addData("RED -> Color sensor "+i+": ",colors[i].red());
                 telemetry.addData("GREEN -> Color sensor "+i+": ",colors[i].green());
                 telemetry.addData("BLUE -> Color sensor "+i+": ",colors[i].blue());
-                telemetry.addData("RESULT -> Color sensor "+i+": ",ColorFunctions.getColor(colors[i].red(),colors[i].green(),colors[i].blue()));
+                telemetry.addData("RESULT -> Color sensor "+i+": ", ColorFunctions.getColor(colors[i].red(),colors[i].green(),colors[i].blue()));
 
             }
 

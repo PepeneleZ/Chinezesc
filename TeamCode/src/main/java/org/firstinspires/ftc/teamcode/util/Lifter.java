@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -9,26 +10,29 @@ import org.firstinspires.ftc.teamcode.lib.PIDF;
 import org.firstinspires.ftc.teamcode.lib.PIDFCoefficients;
 
 public class Lifter implements Updateable{
-    public DcMotorEx front, back;
+    public DcMotorEx left, right;
 
-    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(0.00002, 0.00027, 0.00003);
+    public static PIDFCoefficients pidfCoefficients = new PIDFCoefficients(2, 0.27, 0.3);
     PIDF pid;
-    static int MAX_RANGE = 100000;
+    static int MAX_RANGE = 2250;
     public LIFTER_POSITIONS lifter_state = LIFTER_POSITIONS.DOWN;
     Telemetry telemetry;
 
     public Lifter(HardwareMap hwmap, Telemetry telemetry){
-        front = hwmap.get(DcMotorEx.class, HardwareConfig.left_lifter);
-        back = hwmap.get(DcMotorEx.class, HardwareConfig.right_lifter);
+        left = hwmap.get(DcMotorEx.class, HardwareConfig.left_lifter);
+        right = hwmap.get(DcMotorEx.class, HardwareConfig.right_lifter);
         pid = new PIDF(pidfCoefficients);
 
-        front.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        back.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        left.setDirection(DcMotorSimple.Direction.FORWARD);
+        right.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        //back.setDirection();
-        //front.setDirection();
-        back.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        back.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        //right.setDirection();
+        //left.setDirection();
+        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         this.telemetry = telemetry;
     }
@@ -52,14 +56,14 @@ public class Lifter implements Updateable{
 
     @Override
     public void update() {
-        double power = pid.update(back.getCurrentPosition());
-        back.setPower(power);
-        front.setPower(power);
+        double power = pid.update(right.getCurrentPosition());
+        right.setPower(power);
+        left.setPower(power);
 
         TelemetryData();
     }
 
     public void TelemetryData(){
-        telemetry.addData("Lifter pos", back.getCurrentPosition());
+        telemetry.addData("Lifter pos", right.getCurrentPosition());
     }
 }

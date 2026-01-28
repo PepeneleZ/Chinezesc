@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+import org.firstinspires.ftc.teamcode.lib.ColorFunctions;
 import org.firstinspires.ftc.teamcode.util.HardwareConfig;
 
 @Config
@@ -14,7 +15,7 @@ public class TestColorSensor extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        color_intake = hardwareMap.get(ColorSensor.class,HardwareConfig.color_sensor);
+        color_intake = hardwareMap.get(ColorSensor.class,HardwareConfig.color_sensor_intake);
         color_intake.enableLed(true);
         waitForStart();
 

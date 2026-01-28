@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Turret implements Updateable{
 
     public DcMotorEx turret_launch;
+    public DcMotorEx launch_encoder;
     public Pose turret_pose;
     private static Servo vertical_angle_servo;
     private static Servo left_hrot_servo, right_hrot_servo;
@@ -33,11 +34,14 @@ public class Turret implements Updateable{
     public static VERTICAL_TURRET_POSITIONS turret_vertical_state = VERTICAL_TURRET_POSITIONS.DOWN;
     public static Pose lebronPose = Constants.lebronPoseRed;
     public static double turret_vertical_position = 0;
+    public static final double ticksPerLaunchRotation=8192;
 
-    public static Feedforward feedforwardController = new Feedforward(0,0,0,0,0); // should be better without kD -> old kD: 0.0000004d
+
+    //public static Feedforward feedforwardController = new Feedforward(0,0.0071d,0.2d,0.0316,5); // should be better without kD -> old kD: 0.0000004d
+    public static Feedforward feedforwardController = new Feedforward(0,0.0071d,0d,0.0316,5); // should be better without kD -> old kD: 0.0000004d
     public double power_of_launch;
     public static boolean runPid = false;
-    public static final double admissible_error = Constants.turretTotalHorizontalTicks/36;
+    public static final double admissible_error = 1.3;
     public static long ticks=0;
 
     // Discussion with the Big Alex -> Notes
@@ -46,6 +50,7 @@ public class Turret implements Updateable{
     // euristical logic - to test things
     public Turret(HardwareMap hwmap, Telemetry telemetry){//, VoltageSensor voltageSensor){
         turret_launch = hwmap.get(DcMotorEx.class, HardwareConfig.turret_launch);
+        launch_encoder = hwmap.get(DcMotorEx.class,HardwareConfig.RB);
         //hrot_encoder = hwmap.get(DcMotorEx.class, HardwareConfig.back_lifter);
         vertical_angle_servo = hwmap.get(Servo.class, HardwareConfig.vertical_angle_servo);
         left_hrot_servo = hwmap.get(Servo.class, HardwareConfig.turret_hrot1);
@@ -53,7 +58,12 @@ public class Turret implements Updateable{
 
         turret_launch.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret_launch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        turret_launch.setDirection(DcMotorSimple.Direction.REVERSE);
+        turret_launch.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        launch_encoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        launch_encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        vertical_angle_servo.setDirection(Servo.Direction.REVERSE);
 
         turret_launch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
@@ -112,33 +122,44 @@ public class Turret implements Updateable{
         turret_vertical_position = turret_vertical_state.val;
     }
     public double getVerticalAngle(){
-        return (vertical_angle_servo.getPosition()*Constants.turretVerticalAngle + Constants.deltaTurretVerticalAngle);
+        return verticalPositionToPercentage(vertical_angle_servo.getPosition())
+                * Constants.turretVerticalAngle
+                + Constants.deltaTurretVerticalAngle;
     }
     public double getVerticalPositionFromAngle(double angle){
-        return (angle-Constants.deltaTurretVerticalAngle)/Constants.turretVerticalAngle;
+        angle = normalizeAngle(angle);
+        return Range.clip(percentageToVerticalPosition(
+                Range.clip((angle-Constants.deltaTurretVerticalAngle)/Constants.turretVerticalAngle,0,1)),
+                VERTICAL_TURRET_POSITIONS.DOWN.val, VERTICAL_TURRET_POSITIONS.UP.val);
     }
-
+    public double verticalPositionToPercentage(double power){
+        return (power-Constants.turretVerticalMinimumPower)/(1-Constants.turretVerticalMinimumPower);
+    }
+    public double percentageToVerticalPosition(double percentage){ //between 0 and 1
+        return percentage*(1-Constants.turretVerticalMinimumPower)+Constants.turretVerticalMinimumPower;
+    }
 
     public double getHorizontalPositionFromAngle(double angle){ //in radians
-        return (angle-1/2.0) / Constants.turretHorizontalAngle;
+        angle = normalizeAngle(angle);
+        return Range.clip(angle/Constants.turretHorizontalAngle + (1/2.0),0,1);
     }
     public double getHorizontalAngleFromPosition(double position){
-        return (position * 1/2.0) / Constants.turretHorizontalAngle;
+        return (position - (1/2.0))
+                * Constants.turretHorizontalAngle;
     }
     public double getHorizontalAngle(){ // should return a normalized angle
-        return (left_hrot_servo.getPosition() / Constants.turretHorizontalAngle) + 1/2.0 ;
-
+        return (left_hrot_servo.getPosition() -(1/2.0)) * Constants.turretHorizontalAngle ;
     }
+
     public void aimLebron() {
         aimVerticalLebron();
         aimHorizontalLebron();
     }
-
     public void aimVerticalLebron(){
         double cateta = Constants.lebronHeight-Constants.turretCenterOffsetZ;
         double ipotenuza = turret_pose.distanceFrom(lebronPose);
         double vertical_angle = Math.asin(cateta/ipotenuza);
-        double vertical_target = Range.clip(getVerticalPositionFromAngle(vertical_angle),0,1);
+        double vertical_target = Range.clip(getVerticalPositionFromAngle(vertical_angle), VERTICAL_TURRET_POSITIONS.DOWN.val,VERTICAL_TURRET_POSITIONS.UP.val);
         vertical_angle_servo.setPosition(vertical_target);
     }
 
@@ -156,12 +177,21 @@ public class Turret implements Updateable{
         right_hrot_servo.setPosition(horizontal_target);
     }
 
+    private double normalizeAngle(double angle){
+        // 1. Force the angle into the -pi to pi range first
+        while (angle > Math.PI) angle -= 2 * Math.PI;
+        while (angle <= -Math.PI) angle += 2 * Math.PI;
+
+        // 2. Now run your original formula
+        return angle;
+    }
+
 
 //28
 
     @Override
     public void update() {
-        turret_launch_position = turret_launch.getCurrentPosition();
+        turret_launch_position = -launch_encoder.getCurrentPosition()/ticksPerLaunchRotation;
         power_of_launch = feedforwardController.update(turret_launch_position);
         //power_of_launch = power_of_launch * (14/voltageSensor.getVoltage());
         if (runPid) {
@@ -169,23 +199,26 @@ public class Turret implements Updateable{
         }
         else
             turret_launch.setPower(0);
-//        if (feedforwardController.targetVelocity== TURRET_LAUNCH_SPEEDS.STOPPED.val && Math.abs(feedforwardController.currentVelocity)<admissible_error && ticks>10){
-//            runPid = false;
-//        }
+        if (feedforwardController.targetVelocity==TURRET_LAUNCH_SPEEDS.STOPPED.val && Math.abs(feedforwardController.currentVelocity)<admissible_error && ticks>10){
+            runPid = false;
+            feedforwardController.reset();
+        }
         ticks++;
-        update_telemetry();
+        //update_telemetry();
     }
 
 
 
     public void update_telemetry(){
         //telemetry.addData("TURRET ANGLE: ", turret_angle);
-        telemetry.addData("TURRET VELOCITY: ",feedforwardController.currentVelocity);
+        telemetry.addData("TURRET VELOCITY: ",feedforwardController.velocitySum/feedforwardController.list_size);
         telemetry.addData("TURRET ACCELERATION: ",feedforwardController.acceleration);
-        telemetry.addData("TURRET POS: ",turret_launch.getCurrentPosition());
+        telemetry.addData("TURRET POS: ",turret_launch_position);
         telemetry.addData("RUN TURRET PID",runPid);
         telemetry.addData("TURRET TARGET VELOCITY: ",feedforwardController.targetVelocity);
-        telemetry.addLine("-----------------------------------------------------"); // separate the mechanisms to make the text easier to read
+        telemetry.addData("power of launch: ",power_of_launch);
+        telemetry.addData("Profiled acceleration: ",feedforwardController.profiledAcceleration);
+        telemetry.addLine("--------------------------------------------------"); // separate the mechanisms to make the text easier to read
 
 
     }

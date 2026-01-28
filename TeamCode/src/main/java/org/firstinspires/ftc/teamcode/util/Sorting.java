@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.util;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -11,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.MultiplePIDF;
-import org.firstinspires.ftc.teamcode.lib.tests.ColorFunctions;
+import org.firstinspires.ftc.teamcode.lib.ColorFunctions;
 import org.firstinspires.ftc.teamcode.util.Constants.COLORS;
 import org.firstinspires.ftc.teamcode.util.Constants.INTAKE_STATES;
 import org.firstinspires.ftc.teamcode.util.Constants.MOVING_STATES;
@@ -30,20 +32,21 @@ import org.firstinspires.ftc.teamcode.util.Constants.MOTIF;
 @Config
 public class Sorting implements  Updateable{
     //---------MOTORS--------------------
-    public Servo transfer_servo;
-    public DcMotorEx blade;
+    public Servo transfer_servo1, transfer_servo2;
+    public DcMotorEx sorting_encoder;
+    public CRServo blade1, blade2;
     public ColorSensor color_sensor_intake;
     private final Intake intake;
     private final VoltageSensor voltageSensor;
     //public static PIDF pidElice = new PIDF(0.000163d,0.0000062d,0.00000091d);
-    public static MultiplePIDF pidElice = new MultiplePIDF(0.00198,0.0002,2e-5d);
+    public static MultiplePIDF pidElice = new MultiplePIDF(0.0001d,0.000002d,0.000000d,0);
 
     private final Telemetry telemetry;
 
 
     //----------POSITIONS-------------
     public TRANSFER_POS transfer_pos = TRANSFER_POS.DOWN;
-    public static final double full_rotation = 384.5;
+    public static final double full_rotation = 8192;
     public static final double one_rotation = full_rotation/6.0;
     private static final double durationOfOneRotation = 0.5;
     private double slightlyMovingDuration=0;
@@ -58,13 +61,13 @@ public class Sorting implements  Updateable{
     private final ElapsedTime transferTimer, collectTimer, slightlyMovingTimer;
     private boolean transfer_isUp = false;
     private int shooting_balls = 0;
-    private static final int admissible_error=7;
+    private static final double admissible_error=100;//140
     private boolean runPid=false;
     private double manualDeviation = 0;
     private double deltaManualDeviation = 0;
     private double startOfManualDeviation = 0;
     public boolean respectMotif = true;
-    public static double kF_fornrofballs=0;
+    public static double kF_fornrofballs=1e-10;
     public double collectTime = 0;
     private double rotations_for_telemetry;
 
@@ -81,30 +84,44 @@ public class Sorting implements  Updateable{
 
 
     public Sorting(HardwareMap hwmap, Telemetry telemetry, Intake intake, VoltageSensor voltageSensor){
-        blade = hwmap.get(DcMotorEx.class, HardwareConfig.sorting);
-        transfer_servo = hwmap.get(Servo.class,HardwareConfig.transfer);
+        blade1 = hwmap.get(CRServo.class, HardwareConfig.sorting1);
+        blade2 = hwmap.get(CRServo.class, HardwareConfig.sorting2);
+        sorting_encoder = hwmap.get(DcMotorEx.class, HardwareConfig.right_lifter);
+
+        transfer_servo1 = hwmap.get(Servo.class, HardwareConfig.transfer_servo1);
+        transfer_servo2 = hwmap.get(Servo.class, HardwareConfig.transfer_servo2);
         color_sensor_intake = hwmap.get(ColorSensor.class, HardwareConfig.color_sensor_intake);
         this.voltageSensor = voltageSensor;
         this.intake = intake;
         this.telemetry = telemetry;
 
 
-        pidElice.addPidCoefficients(0.00198,0.0002,2e-5d);// pentru o rotatie jumate (3/6
-        pidElice.addPidCoefficients(0.00198,0.0002,2e-5d);// pentru jumate de rotatie (1/6)
+        pidElice.addPidCoefficients(0.0002,0.000002d,0.000000d);// pentru o rotatie jumate (3/6
+        pidElice.addPidCoefficients(0.000163d,0.0000062d,0.00000091d);// pentru jumate de rotatie (1/6)
 
 
 
         transferTimer = new ElapsedTime();
         collectTimer = new ElapsedTime();
         slightlyMovingTimer = new ElapsedTime();
-        transfer_servo.setDirection(Servo.Direction.REVERSE);
 
-        transfer_servo.setPosition(transfer_pos.val);
+        //transfer_servo1.setDirection(Servo.Direction.FORWARD);
+        //transfer_servo1.setDirection(Servo.Direction.REVERSE);
 
-        blade.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        //transfer_servo1.setPosition(transfer_pos.val);
+        //transfer_servo2.setPosition(transfer_pos.val);
+
+        blade1.setDirection(DcMotorSimple.Direction.FORWARD);
+        blade2.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        sorting_encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        /*
         blade.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         blade.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         blade.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+         */
 
         // encoder_elice.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -160,7 +177,8 @@ public class Sorting implements  Updateable{
         }
         pidElice.setTargetPosition(position);
         runPid = false;
-        blade.setPower(manualDeviation);
+        blade1.setPower(manualDeviation);
+        blade2.setPower(manualDeviation);
     }
     public void resetStates(){
         current_moving_state = MOVING_STATES.NOTHING;
@@ -196,9 +214,7 @@ public class Sorting implements  Updateable{
         intake.toggle(INTAKE_STATES.STOPPED);
         Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.STOPPED);
 
-        blade.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        blade.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        blade.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        sorting_encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //encoder_elice.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
@@ -209,7 +225,8 @@ public class Sorting implements  Updateable{
             return;
         }
         if(!transfer_isUp){
-            transfer_servo.setPosition(TRANSFER_POS.UP.val);
+           // transfer_servo1.setPosition(TRANSFER_POS.UP.val);
+            transfer_servo2.setPosition(TRANSFER_POS.UP.val);
 
             transferTimer.reset();
             transferTimer.startTime();
@@ -219,7 +236,9 @@ public class Sorting implements  Updateable{
             }
         }
         else{
-            transfer_servo.setPosition(TRANSFER_POS.DOWN.val);
+            //transfer_servo1.setPosition(TRANSFER_POS.DOWN.val);
+            transfer_servo2.setPosition(TRANSFER_POS.DOWN.val);
+
             transferTimer.reset();
         }
         transfer_isUp = !transfer_isUp;
@@ -230,7 +249,9 @@ public class Sorting implements  Updateable{
             return;
         }
         if(direction){
-            transfer_servo.setPosition(TRANSFER_POS.UP.val);
+            //transfer_servo1.setPosition(TRANSFER_POS.UP.val);
+            transfer_servo2.setPosition(TRANSFER_POS.UP.val);
+
             transferTimer.reset();
             transferTimer.startTime();
             transfer_isUp = true;
@@ -240,7 +261,8 @@ public class Sorting implements  Updateable{
             }
         }
         else{
-            transfer_servo.setPosition(TRANSFER_POS.DOWN.val);
+            //transfer_servo1.setPosition(TRANSFER_POS.DOWN.val);
+            transfer_servo2.setPosition(TRANSFER_POS.DOWN.val);
             transferTimer.reset();
             transfer_isUp = false;
         }
@@ -248,10 +270,15 @@ public class Sorting implements  Updateable{
 
     public void rotate_elice(double turns){ // positive is right, negative is left
         if(turns==0) return;
-        if (getNumberOfBalls()==0 && (int)turns!=turns)
-            pidElice.switchPid(4);
-        else
+        if (turns>0) {
             pidElice.switchPid(0);
+            kF_fornrofballs = Math.abs(kF_fornrofballs);
+        }
+        else {
+            pidElice.switchPid(1);
+            kF_fornrofballs = -Math.abs(kF_fornrofballs);
+
+        }
         //pidElice.switchPid(getNumberOfBalls());
 
         last_moving_state = current_moving_state;
@@ -273,7 +300,7 @@ public class Sorting implements  Updateable{
 
     @Override
     public void update(){
-        position = blade.getCurrentPosition();
+        position = sorting_encoder.getCurrentPosition();
         blade_rotation = (int)position % (int)full_rotation;
         if(blade_rotation<0)blade_rotation=(int)full_rotation+blade_rotation;
         pidError = target-position;
@@ -282,12 +309,16 @@ public class Sorting implements  Updateable{
             double power;
             power = pidElice.update(position) * (14/voltageSensor.getVoltage()) + kF_fornrofballs*getNumberOfBalls();
             //            power = pidElice.update(position) * (14/voltageSensor.getVoltage());
-            blade.setPower(power);
+            blade1.setPower(power);
+            blade2.setPower(power);
         }
-        else if ((manualDeviation>0?manualDeviation:-manualDeviation)>0.2) {
+        else if (Math.abs(manualDeviation)>0.2) {
             manualBlade();
         }
-        else blade.setPower(0);
+        else {
+            blade1.setPower(0);
+            blade2.setPower(0);
+        }
 
         if (intake.intake_state == INTAKE_STATES.SLIGHTLY_MOVING && (current_moving_state != MOVING_STATES.MOVING || slightlyMovingTimer.seconds() >slightlyMovingDuration)){
             if (intake.fromCollectingToSlightly)
@@ -297,7 +328,7 @@ public class Sorting implements  Updateable{
             slightlyMovingTimer.reset();
         }
 
-        if (Math.abs(pidError) > admissible_error*3 && !runPid && Turret.turret_launcher_state == TURRET_LAUNCH_SPEEDS.STOPPED) {
+        if (Math.abs(pidError) > admissible_error*3&& !runPid && Turret.turret_launcher_state == TURRET_LAUNCH_SPEEDS.STOPPED) {
             runPid = true;
             pidElice.resetPid();
         }
@@ -331,7 +362,7 @@ public class Sorting implements  Updateable{
         //MMMMMOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOVIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIINGGGGGGGGGGGGGGGGGGGGGG
         if (current_moving_state == MOVING_STATES.MOVING){
 
-            if ((pidError>0?pidError:-pidError) < admissible_error && runPid && !((manualDeviation>0?manualDeviation:-manualDeviation)>0.2)){
+            if (Math.abs(pidError)< admissible_error && runPid && !(Math.abs(manualDeviation)>0.2)){
                 //if ((position>0?position:-position)>(target>0?target:-target)){
                 pidElice.resetPid();
                 runPid = false;
@@ -404,6 +435,7 @@ public class Sorting implements  Updateable{
 
         }
         resetManual();
+       // telemetryData();
     }
     public void exit_shooting(){
         last_moving_state = MOVING_STATES.NOTHING;
@@ -580,7 +612,7 @@ public class Sorting implements  Updateable{
 
 
 
-    public  void telemetryData(){
+    public void telemetryData(){
         telemetry.addData("Absolute bladep pos: ",position);
         telemetry.addData("Moded blade pos: ",blade_rotation);
         telemetry.addData("STATEEEE", current_moving_state.val);
@@ -604,6 +636,8 @@ public class Sorting implements  Updateable{
         telemetry.addData("4: ", magazine[4].val);
         telemetry.addData("5: ", magazine[5].val);
         telemetry.addData("6: ", magazine[6].val);
+        telemetry.addLine("--------------------------------------------------"); // separate the mechanisms to make the text easier to read
+
 
     }
 

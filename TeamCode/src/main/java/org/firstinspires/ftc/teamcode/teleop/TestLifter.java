@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.util.Lifter;
 public class TestLifter extends LinearOpMode {
 
     public Controller controller;
+    public boolean toggle = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -25,8 +26,10 @@ public class TestLifter extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive() && !isStopRequested()) {
-            if(controller.circle.isPressed()) lifter.toggle();
-
+            if(toggle) {
+                lifter.toggle();
+                toggle = false;
+            }
             lifter.update();
         }
     }

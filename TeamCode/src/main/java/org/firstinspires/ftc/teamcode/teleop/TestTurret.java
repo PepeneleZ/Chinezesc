@@ -17,7 +17,7 @@ import java.io.CharArrayReader;
 public class TestTurret extends LinearOpMode {
 
     Turret turret;
-    public static int target=0;
+    public static int target=20;
     public static boolean runOnPower = false;
     public static double power = 0;
     Controller controller1;
@@ -41,6 +41,7 @@ public class TestTurret extends LinearOpMode {
             }
 
             turret.update();
+            turret.update_telemetry();
             controller1.update();
             telemetry.update();
 

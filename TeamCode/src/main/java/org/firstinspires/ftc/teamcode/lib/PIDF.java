@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.lib;
 
+import java.util.function.Supplier;
+
 public class PIDF {
-    public double kP=0, kI=0, kD=0, kF=0; ;
+    public double kP=0, kI=0, kD=0, kF;
+    public Supplier<Double> kFSupplier = null;
+    public boolean useSupplier = false;
     public double targetPos = 0, lastError = 0, sumError = 0, error=0;
     public long lastTime;
 
@@ -16,6 +20,13 @@ public class PIDF {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+    }
+    public PIDF(double kP, double kI, double kD, Supplier<Double> kF){
+        this.kI = kI;
+        this.kP = kP;
+        this.kD = kD;
+        this.kFSupplier = kF;
+        this.useSupplier = true;
     }
     
     public PIDF(PIDFCoefficients coeffs){
@@ -56,9 +67,16 @@ public class PIDF {
         lastError = error;
         lastTime = currentTime;
 
-        return (error * kP +
-                delta_e/deltaTime * kD +
-                sumError * kI +
-                kF);
+        if (! useSupplier) {
+            return (error * kP +
+                    delta_e / deltaTime * kD +
+                    sumError * kI +
+                    kF);
+        } else {
+            return (error * kP +
+                    delta_e / deltaTime * kD +
+                    sumError * kI +
+                    kFSupplier.get() * Math.signum(error));
+        }
     }
 }
