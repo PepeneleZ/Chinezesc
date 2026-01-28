@@ -35,11 +35,12 @@ public class Feedforward {
 
     public void setTarget(double target){
         reset();
-        duration = (target-targetVelocity)/maxAcceleration;
+        duration = Math.abs((target-targetVelocity))/maxAcceleration;
         startTime = System.nanoTime();
         if (target>=targetVelocity) increasing = 1;
         else increasing = -1;
         targetVelocity = target;
+        profiledVelocity = velocitySum;
 
     }
     public void reset(){
@@ -61,7 +62,7 @@ public class Feedforward {
         acceleration = (lastVelocity-currentVelocity)/dt;
 
 
-        if ((profiledVelocity<currentVelocity&&increasing==1)||(profiledVelocity>currentVelocity&&increasing==-1))
+        if ((profiledVelocity < targetVelocity &&increasing == 1) || (profiledVelocity > targetVelocity && increasing == -1))
             profiledVelocity += dt * maxAcceleration * increasing;
         else profiledVelocity = targetVelocity;
 
@@ -71,13 +72,13 @@ public class Feedforward {
             profiledAcceleration = 0;
         }
         else {
-            profiledAcceleration = maxAcceleration;
+            profiledAcceleration = maxAcceleration*increasing;
         }
         lastTime = currentTime;
         lastVelocity = currentVelocity;
         lastPosition = currentPosition;
         //return error*kP + targetVelocity * kV + profiledAcceleration * kA + kStatic;
-        return Range.clip(targetVelocity*kV + kStatic + profiledAcceleration*kA,-1,1);
+        return Range.clip(error*kP + targetVelocity*kV + kStatic + profiledAcceleration*kA,-1,1);
     }
     private void resetList(){
         Arrays.fill(velocityList, 0);

@@ -18,15 +18,19 @@ public class TestTurret extends LinearOpMode {
 
     Turret turret;
     public static int target=20;
+    public static double deltaHorizontalAngle = 20, deltaVerticalAngle = 10;
+    public static double verticalAngle=30, horizontalAngle=0;
+
     public static boolean runOnPower = false;
     public static double power = 0;
-    Controller controller1;
+    Controller controller1, controller2;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         turret = new Turret(hardwareMap, telemetry);
         controller1 = new Controller(gamepad1);
+        controller2 = new Controller(gamepad2);
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
             if (controller1.triangle.isPressed())
@@ -40,8 +44,27 @@ public class TestTurret extends LinearOpMode {
                 turret.turret_launch.setPower(power);
             }
 
+            if (controller2.dpadUp.isPressed()){
+                verticalAngle += deltaVerticalAngle;
+                turret.setVerticalPositionFromAngle(Math.toRadians(verticalAngle));
+            }
+            if (controller2.dpadDown.isPressed()){
+                verticalAngle -= deltaVerticalAngle;
+                turret.setVerticalPositionFromAngle(Math.toRadians(verticalAngle));
+            }
+            if(controller2.dpadRight.isPressed()){
+                horizontalAngle += deltaHorizontalAngle;
+                turret.setHorizontalPositionFromAngle(Math.toRadians(horizontalAngle));
+            }
+            if(controller2.dpadLeft.isPressed()){
+                horizontalAngle -= deltaHorizontalAngle;
+                turret.setHorizontalPositionFromAngle(Math.toRadians(horizontalAngle));
+            }
+
             turret.update();
             turret.update_telemetry();
+            telemetry.addData("Vertical angle", turret.getVerticalAngle());
+            telemetry.addData("Horizontal angle, ", turret.getHorizontalAngle());
             controller1.update();
             telemetry.update();
 

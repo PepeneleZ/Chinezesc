@@ -31,17 +31,17 @@ public class Turret implements Updateable{
 
     public double turret_launch_position = 0;
     public static TURRET_LAUNCH_SPEEDS turret_launcher_state=TURRET_LAUNCH_SPEEDS.STOPPED;
-    public static VERTICAL_TURRET_POSITIONS turret_vertical_state = VERTICAL_TURRET_POSITIONS.DOWN;
+    public static VERTICAL_TURRET_POSITIONS turret_vertical_state = VERTICAL_TURRET_POSITIONS.UP;
     public static Pose lebronPose = Constants.lebronPoseRed;
     public static double turret_vertical_position = 0;
     public static final double ticksPerLaunchRotation=8192;
 
 
     //public static Feedforward feedforwardController = new Feedforward(0,0.0071d,0.2d,0.0316,5); // should be better without kD -> old kD: 0.0000004d
-    public static Feedforward feedforwardController = new Feedforward(0,0.0071d,0d,0.0316,5); // should be better without kD -> old kD: 0.0000004d
+    public static Feedforward feedforwardController = new Feedforward(0.02,0.01d,0.015,0.131,40); // should be better without kD -> old kD: 0.0000004d
     public double power_of_launch;
     public static boolean runPid = false;
-    public static final double admissible_error = 1.3;
+    public static final double admissible_error = 15;
     public static long ticks=0;
 
     // Discussion with the Big Alex -> Notes
@@ -63,12 +63,16 @@ public class Turret implements Updateable{
         launch_encoder.setDirection(DcMotorSimple.Direction.REVERSE);
         launch_encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        vertical_angle_servo.setDirection(Servo.Direction.REVERSE);
+        //vertical_angle_servo.setDirection(Servo.Direction.REVERSE);
 
         turret_launch.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
         vertical_angle_servo.setPosition(turret_vertical_state.val);
+
+        left_hrot_servo.setDirection(Servo.Direction.FORWARD);
+        left_hrot_servo.setPosition(0.5);
+        right_hrot_servo.setPosition(0.5);
         feedforwardController.reset();
         //this.voltageSensor = voltageSensor;
         setTarget_rotation(turret_launcher_state);
@@ -138,7 +142,12 @@ public class Turret implements Updateable{
     public double percentageToVerticalPosition(double percentage){ //between 0 and 1
         return percentage*(1-Constants.turretVerticalMinimumPower)+Constants.turretVerticalMinimumPower;
     }
+    public void setVerticalPositionFromAngle(double angle){
+        vertical_angle_servo.setPosition(Range.clip(getVerticalPositionFromAngle(angle), VERTICAL_TURRET_POSITIONS.DOWN.val,VERTICAL_TURRET_POSITIONS.UP.val));
+    }
 
+
+///////////////////////// HORIZONTAL
     public double getHorizontalPositionFromAngle(double angle){ //in radians
         angle = normalizeAngle(angle);
         return Range.clip(angle/Constants.turretHorizontalAngle + (1/2.0),0,1);
@@ -150,7 +159,17 @@ public class Turret implements Updateable{
     public double getHorizontalAngle(){ // should return a normalized angle
         return (left_hrot_servo.getPosition() -(1/2.0)) * Constants.turretHorizontalAngle ;
     }
+    public void setHorizontalPositionFromAngle(double angle) {
+        angle = normalizeAngle(angle);
+        angle = Range.clip(angle / Constants.turretHorizontalAngle + (1 / 2.0), 0, 1);
+        left_hrot_servo.setPosition(angle);
+        right_hrot_servo.setPosition(angle);
+    }
 
+
+
+
+//////// LEBRON
     public void aimLebron() {
         aimVerticalLebron();
         aimHorizontalLebron();
@@ -159,8 +178,7 @@ public class Turret implements Updateable{
         double cateta = Constants.lebronHeight-Constants.turretCenterOffsetZ;
         double ipotenuza = turret_pose.distanceFrom(lebronPose);
         double vertical_angle = Math.asin(cateta/ipotenuza);
-        double vertical_target = Range.clip(getVerticalPositionFromAngle(vertical_angle), VERTICAL_TURRET_POSITIONS.DOWN.val,VERTICAL_TURRET_POSITIONS.UP.val);
-        vertical_angle_servo.setPosition(vertical_target);
+        setVerticalPositionFromAngle(vertical_angle);
     }
 
     public void aimHorizontalLebron(){
@@ -173,8 +191,8 @@ public class Turret implements Updateable{
 
         double delta_horizontal_angle = turretLookVector.dot(lebronVector);
         double horizontal_target = Range.clip(left_hrot_servo.getPosition()+getHorizontalPositionFromAngle(delta_horizontal_angle),0,1);
-        left_hrot_servo.setPosition(horizontal_target);
         right_hrot_servo.setPosition(horizontal_target);
+        left_hrot_servo.setPosition(horizontal_target);
     }
 
     private double normalizeAngle(double angle){
@@ -200,8 +218,10 @@ public class Turret implements Updateable{
         else
             turret_launch.setPower(0);
         if (feedforwardController.targetVelocity==TURRET_LAUNCH_SPEEDS.STOPPED.val && Math.abs(feedforwardController.currentVelocity)<admissible_error && ticks>10){
+            if (runPid)
+                feedforwardController.reset();
+
             runPid = false;
-            feedforwardController.reset();
         }
         ticks++;
         //update_telemetry();
@@ -218,6 +238,8 @@ public class Turret implements Updateable{
         telemetry.addData("TURRET TARGET VELOCITY: ",feedforwardController.targetVelocity);
         telemetry.addData("power of launch: ",power_of_launch);
         telemetry.addData("Profiled acceleration: ",feedforwardController.profiledAcceleration);
+        telemetry.addData("Profiled velocity: ",feedforwardController.profiledVelocity);
+        telemetry.addData("nigga: ", feedforwardController.dt*feedforwardController.maxAcceleration* feedforwardController.increasing);
         telemetry.addLine("--------------------------------------------------"); // separate the mechanisms to make the text easier to read
 
 

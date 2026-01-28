@@ -10,7 +10,7 @@ public class Constants {
 
     /// /////////////// SORTING /////////////// ///
     public enum TRANSFER_POS{
-        UP(0.85),DOWN(0);
+        UP(1),DOWN(0);
         final double val;
         TRANSFER_POS(double val) {
             this.val = val;
@@ -64,8 +64,8 @@ public class Constants {
 
     /// /////////////// ROBOT CONSTANTS /////////////// ///
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(5.688976378d)
-            .strafePodX(0d)
+            .forwardPodY(7.087d)
+            .strafePodX(2.559d)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName(HardwareConfig.pinpoint_calculator)
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
