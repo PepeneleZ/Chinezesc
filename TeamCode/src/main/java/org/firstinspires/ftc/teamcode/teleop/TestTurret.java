@@ -65,7 +65,14 @@ public class TestTurret extends LinearOpMode {
             turret.update_telemetry();
             telemetry.addData("Vertical angle", turret.getVerticalAngle());
             telemetry.addData("Horizontal angle, ", turret.getHorizontalAngle());
+            telemetry.addData("30: ",turret.getVerticalPositionFromAngle(Math.toRadians(30)));
+            telemetry.addData("40: ",turret.getVerticalPositionFromAngle(Math.toRadians(40)));
+            telemetry.addData("50: ",turret.getVerticalPositionFromAngle(Math.toRadians(50)));
+            telemetry.addData("70: ",turret.getVerticalPositionFromAngle(Math.toRadians(70)));
+
+
             controller1.update();
+            controller2.update();
             telemetry.update();
 
         }

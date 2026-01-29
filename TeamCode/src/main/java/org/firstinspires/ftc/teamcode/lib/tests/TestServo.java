@@ -19,7 +19,7 @@ public class TestServo extends LinearOpMode {
          servo2 = hardwareMap.get(Servo.class, HardwareConfig.turret_hrot2);
          servo3 = hardwareMap.get(Servo.class, HardwareConfig.vertical_angle_servo);
 
-         servo1.setDirection(Servo.Direction.REVERSE);
+         servo1.setDirection(Servo.Direction.FORWARD);
 
          servo1.setPosition(0.7);
          servo2.setPosition(0.7);

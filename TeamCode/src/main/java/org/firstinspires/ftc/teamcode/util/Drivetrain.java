@@ -12,8 +12,8 @@ public class Drivetrain {
 
     public Drivetrain(@NonNull HardwareMap hwmap){
         RF = hwmap.get(DcMotorEx.class, HardwareConfig.RF);
-        LF = hwmap.get(DcMotorEx.class, HardwareConfig.RB);
-        RB = hwmap.get(DcMotorEx.class, HardwareConfig.LF);
+        LF = hwmap.get(DcMotorEx.class, HardwareConfig.LF);
+        RB = hwmap.get(DcMotorEx.class, HardwareConfig.RB);
         LB = hwmap.get(DcMotorEx.class, HardwareConfig.LB);
 
         RF.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -28,15 +28,15 @@ public class Drivetrain {
     }
 
     public void drive(double forward, double right, double rotate) {
-        RF.setPower(forward - right - rotate);
-        LF.setPower(forward + right + rotate);
-        RB.setPower(forward + right - rotate);
-        LB.setPower(forward - right + rotate);
+        RF.setPower(forward + right - rotate);
+        LF.setPower(forward - right + rotate);
+        RB.setPower(forward - right - rotate);
+        LB.setPower(forward + right + rotate);
     }
     public void setMotorPower(double rf_power,double lf_power, double rb_power, double lb_power){
         RF.setPower(rf_power);
-        LF.setPower(-lf_power);
+        LF.setPower(lf_power);
         RB.setPower(rb_power);
-        LB.setPower(-lb_power);
+        LB.setPower(lb_power);
     }
 }

@@ -60,8 +60,9 @@ public class Turret implements Updateable{
         turret_launch.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         turret_launch.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        launch_encoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        //launch_encoder.setDirection(DcMotorSimple.Direction.REVERSE);
         launch_encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        launch_encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //vertical_angle_servo.setDirection(Servo.Direction.REVERSE);
 
@@ -71,6 +72,7 @@ public class Turret implements Updateable{
         vertical_angle_servo.setPosition(turret_vertical_state.val);
 
         left_hrot_servo.setDirection(Servo.Direction.FORWARD);
+        right_hrot_servo.setDirection(Servo.Direction.FORWARD);
         left_hrot_servo.setPosition(0.5);
         right_hrot_servo.setPosition(0.5);
         feedforwardController.reset();
@@ -160,8 +162,7 @@ public class Turret implements Updateable{
         return (left_hrot_servo.getPosition() -(1/2.0)) * Constants.turretHorizontalAngle ;
     }
     public void setHorizontalPositionFromAngle(double angle) {
-        angle = normalizeAngle(angle);
-        angle = Range.clip(angle / Constants.turretHorizontalAngle + (1 / 2.0), 0, 1);
+        angle = getHorizontalPositionFromAngle(angle);
         left_hrot_servo.setPosition(angle);
         right_hrot_servo.setPosition(angle);
     }
@@ -190,7 +191,7 @@ public class Turret implements Updateable{
 
 
         double delta_horizontal_angle = turretLookVector.dot(lebronVector);
-        double horizontal_target = Range.clip(left_hrot_servo.getPosition()+getHorizontalPositionFromAngle(delta_horizontal_angle),0,1);
+        double horizontal_target = Range.clip(left_hrot_servo.getPosition()-getHorizontalPositionFromAngle(delta_horizontal_angle),0,1);
         right_hrot_servo.setPosition(horizontal_target);
         left_hrot_servo.setPosition(horizontal_target);
     }
@@ -209,7 +210,7 @@ public class Turret implements Updateable{
 
     @Override
     public void update() {
-        turret_launch_position = -launch_encoder.getCurrentPosition()/ticksPerLaunchRotation;
+        turret_launch_position = launch_encoder.getCurrentPosition()/ticksPerLaunchRotation;
         power_of_launch = feedforwardController.update(turret_launch_position);
         //power_of_launch = power_of_launch * (14/voltageSensor.getVoltage());
         if (runPid) {

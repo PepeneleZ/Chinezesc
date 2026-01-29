@@ -20,7 +20,7 @@ public class TestMotor extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        motor = hardwareMap.get(DcMotorEx.class, HardwareConfig.turret_launch);
+        motor = hardwareMap.get(DcMotorEx.class, HardwareConfig.RB);
 //        servo1 = hardwareMap.get(CRServo.class,HardwareConfig.sorting1);
 //        servo2 = hardwareMap.get(CRServo.class,HardwareConfig.sorting2);
 //        motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

@@ -444,7 +444,7 @@ public class Sorting implements  Updateable{
                 return;
             }
 
-            if (magazine[5]==shooting_order[shooting_index]) {
+            if (magazine[5]==shooting_order[shooting_index] || (!respectMotif && magazine[5] != COLORS.EMPTY)) {
                 shooting_index++;
                 shooting_balls--;
                 movedball = false;
@@ -452,18 +452,18 @@ public class Sorting implements  Updateable{
                 safe_timer.startTime();
                 transfer_ball(true);
             }
-            else if (magazine[1]==shooting_order[shooting_index] || magazine[6] == shooting_order[shooting_index]) {
-                if(movedball && safe_timer.milliseconds()<1000) return;
-                else if (!movedball && safe_timer.milliseconds()>1000) exit_shooting();
+            else if ((magazine[1]==shooting_order[shooting_index] || (!respectMotif && magazine[1] != COLORS.EMPTY)) || (magazine[6] == shooting_order[shooting_index]|| (!respectMotif && magazine[6] != COLORS.EMPTY))) {
+                if(movedball && safe_timer.milliseconds()<1200) return;
+                else if (!movedball && safe_timer.milliseconds()>1200) exit_shooting();
                 safe_timer.reset();
                 safe_timer.startTime();
                 movedball = true;
                 rotate_elice(-1);
                 return;
             }
-            else if (magazine[3]==shooting_order[shooting_index] || magazine[4] == shooting_order[shooting_index]){
-                if(movedball && safe_timer.milliseconds()<1000) return;
-                else if (!movedball && safe_timer.milliseconds()>1000) exit_shooting();
+            else if ((magazine[3]==shooting_order[shooting_index]|| (!respectMotif && magazine[3] != COLORS.EMPTY) ) || (magazine[4] == shooting_order[shooting_index])|| (!respectMotif && magazine[4] != COLORS.EMPTY)){
+                if(movedball && safe_timer.milliseconds()<1200) return;
+                else if (!movedball && safe_timer.milliseconds()>1200) exit_shooting();
                 safe_timer.reset();
                 safe_timer.startTime();
                 movedball = true;
@@ -791,10 +791,10 @@ public class Sorting implements  Updateable{
         telemetry.addData("5: ", magazine[5].val);
         telemetry.addData("6: ", magazine[6].val);
 
-        telemetry.addData("shooting order 0: ",shooting_order_powers[0]);
-        telemetry.addData("shooting order 1: ",shooting_order_powers[1]);
-        telemetry.addData("shooting order 2: ",shooting_order_powers[2]);
-        telemetry.addData("shooting order 3: ",shooting_order_powers[3]);
+        telemetry.addData("shooting order 1: ",shooting_order[1]);
+        telemetry.addData("shooting order 2: ",shooting_order[2]);
+        telemetry.addData("shooting order 3: ",shooting_order[3]);
+
 
         telemetry.addData("rotate pozitiva shooting", niggacuplus);
         telemetry.addData("rotate negativa shooting", niggacuminus);

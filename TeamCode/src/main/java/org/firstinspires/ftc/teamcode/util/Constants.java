@@ -64,7 +64,7 @@ public class Constants {
 
     /// /////////////// ROBOT CONSTANTS /////////////// ///
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(7.087d)
+            .forwardPodY(-7.087d)
             .strafePodX(2.559d)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName(HardwareConfig.pinpoint_calculator)
