@@ -21,6 +21,7 @@ public class Limelight {
     public final int bluePipeline=1, redPipeline=2;
     public int colorPipeline = 1;
     public Pose3D llpose3d, zeroPose;
+    public boolean searchingMotif = true;
 
     public int currentPipeline = bluePipeline;
 
@@ -46,21 +47,26 @@ public class Limelight {
 
     public void update() {
         result = getResult();
-        if (result.isValid()) {
-            telemetryData();
-        } else {
-            telemetry.addData("Limelight", "No Target Found");
-        }
+//        if (result.isValid()) {
+//            telemetryData();
+//        } else {
+//            telemetry.addData("Limelight", "No Target Found");
+//        }
         for (LLResultTypes.FiducialResult f : result.getFiducialResults() ){
             int id = f.getFiducialId();
-            if (id==21){
+            if (id==21 && searchingMotif){
                 Sorting.motif = Constants.MOTIF.GPP;
+                searchingMotif = false;
             }
-            else if (id==22){
+            else if (id==22 && searchingMotif){
                 Sorting.motif = Constants.MOTIF.PGP;
+                searchingMotif = false;
+
             }
-            else if (id==23){
+            else if (id==23 && searchingMotif){
                 Sorting.motif = Constants.MOTIF.PPG;
+                searchingMotif = false;
+
             }
             else if (id==20){
                 llpose3d = result.getBotpose();

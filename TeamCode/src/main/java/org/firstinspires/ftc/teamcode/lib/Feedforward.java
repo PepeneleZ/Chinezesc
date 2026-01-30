@@ -9,6 +9,7 @@ public class Feedforward {
     public double kV = 0, kA = 0, kStatic = 0, kP=0;
     public double dt=0, profiledVelocity=0, profiledAcceleration=0, currentVelocity=0, targetVelocity=0, maxAcceleration=0,  duration=0, lastPosition=0, increasing=1, acceleration=0,lastVelocity=0;
     public long lastTime=0,startTime=0;
+    public boolean kp_disabled =false;
     public int index = 0;
     public int list_size = 10;
     public double velocitySum = 0;
@@ -78,7 +79,7 @@ public class Feedforward {
         lastVelocity = currentVelocity;
         lastPosition = currentPosition;
         //return error*kP + targetVelocity * kV + profiledAcceleration * kA + kStatic;
-        return Range.clip(error*kP + targetVelocity*kV + kStatic + profiledAcceleration*kA,-1,1);
+        return Range.clip(error* (kp_disabled?0:kP) + targetVelocity*kV + kStatic + profiledAcceleration*kA,-1,1);
     }
     private void resetList(){
         Arrays.fill(velocityList, 0);

@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ftc.localization.constants.PinpointConstants;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Config
 public class Constants {
 
     /// /////////////// SORTING /////////////// ///
@@ -35,7 +37,7 @@ public class Constants {
 
     /// /////////////// TURRET /////////////// ///
     public enum TURRET_LAUNCH_SPEEDS{
-        CLOSE(20),FAR(50),STOPPED(0), CUSTOM(40);
+        CLOSE(45),FAR(52),STOPPED(0), CUSTOM(40);
         final double val;
         TURRET_LAUNCH_SPEEDS(double val) {
             this.val = val;
@@ -73,8 +75,7 @@ public class Constants {
             .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
     /// Turret ///
-    public static final double turretCenterOffsetX = 2d;
-    public static final double turretCenterOffsetY = 3d;
+    public static final double turretCenterOffsetY = -2.3d;
     public static final double turretCenterOffsetZ = 5d;
     public static final double turretRadius = 5.09;
     //public static final double deltaTurretHorizontalAngle =Math.toRadians(30);
@@ -90,8 +91,11 @@ public class Constants {
     /// Field ///
     public static final Pose redAprilTagPose = new Pose(130,130,Math.toRadians(45));
     public static final Pose blueAprilTagPose = new Pose(14,130,Math.toRadians(-45));
-    public static final Pose lebronPoseRed = new Pose(144,144,0);
-    public static final Pose lebronPoseBlue = new Pose(0,144,0);
+    public static double lebronPoseRedX=144, lebronPoseRedY=144;
+    public static double lebronPoseBlueX=0, lebronPoseBlueY=144;
+
+    public static  Pose lebronPoseRed = new Pose(lebronPoseRedX,lebronPoseRedY,0);
+    public static  Pose lebronPoseBlue = new Pose(lebronPoseBlueX,lebronPoseBlueY,0);
     public static final double lebronHeight = 53;
 
 }

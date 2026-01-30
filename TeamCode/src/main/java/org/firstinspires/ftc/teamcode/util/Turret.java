@@ -27,6 +27,8 @@ public class Turret implements Updateable{
     //private static DcMotorEx hrot_encoder;
    // private final VoltageSensor voltageSensor;
     private Telemetry telemetry;
+    public double delta_horizontal_angle;
+    public double angleBetweenRobotAndLebron;
 
 
     public double turret_launch_position = 0;
@@ -71,8 +73,8 @@ public class Turret implements Updateable{
         turret_launcher_state = TURRET_LAUNCH_SPEEDS.STOPPED;
         vertical_angle_servo.setPosition(turret_vertical_state.val);
 
-        left_hrot_servo.setDirection(Servo.Direction.FORWARD);
-        right_hrot_servo.setDirection(Servo.Direction.FORWARD);
+        left_hrot_servo.setDirection(Servo.Direction.REVERSE);
+        right_hrot_servo.setDirection(Servo.Direction.REVERSE);
         left_hrot_servo.setPosition(0.5);
         right_hrot_servo.setPosition(0.5);
         feedforwardController.reset();
@@ -183,15 +185,13 @@ public class Turret implements Updateable{
     }
 
     public void aimHorizontalLebron(){
-        Vector turretLookVector, lebronVector;
-        Pose poseFromRobotToLebron;
-        poseFromRobotToLebron = new Pose(lebronPose.getX()-turret_pose.getX(), lebronPose.getY()-turret_pose.getY(),0);
-        turretLookVector = turret_pose.getHeadingAsUnitVector();
-        lebronVector = new Vector(poseFromRobotToLebron);
+        double dx = lebronPose.getX() - turret_pose.getX();
+        double dy = lebronPose.getY() - turret_pose.getY();
+        angleBetweenRobotAndLebron = Math.atan2(dy, dx);
 
 
-        double delta_horizontal_angle = turretLookVector.dot(lebronVector);
-        double horizontal_target = Range.clip(left_hrot_servo.getPosition()-getHorizontalPositionFromAngle(delta_horizontal_angle),0,1);
+        delta_horizontal_angle = angleBetweenRobotAndLebron - turret_pose.getHeading();
+        double horizontal_target = Range.clip(getHorizontalPositionFromAngle(delta_horizontal_angle),0,1);
         right_hrot_servo.setPosition(horizontal_target);
         left_hrot_servo.setPosition(horizontal_target);
     }
@@ -240,7 +240,7 @@ public class Turret implements Updateable{
         telemetry.addData("power of launch: ",power_of_launch);
         telemetry.addData("Profiled acceleration: ",feedforwardController.profiledAcceleration);
         telemetry.addData("Profiled velocity: ",feedforwardController.profiledVelocity);
-        telemetry.addData("nigga: ", feedforwardController.dt*feedforwardController.maxAcceleration* feedforwardController.increasing);
+        telemetry.addData("LebroPoseX",lebronPose.getX());
         telemetry.addLine("--------------------------------------------------"); // separate the mechanisms to make the text easier to read
 
 

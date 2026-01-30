@@ -16,6 +16,7 @@ public class Lifter implements Updateable{
     PIDF pid;
     static int MAX_RANGE = 2250;
     public LIFTER_POSITIONS lifter_state = LIFTER_POSITIONS.DOWN;
+    public boolean slightlyRetracted = true;
     Telemetry telemetry;
 
     public Lifter(HardwareMap hwmap, Telemetry telemetry){
@@ -32,12 +33,12 @@ public class Lifter implements Updateable{
         //right.setDirection();
         //left.setDirection();
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         this.telemetry = telemetry;
     }
     public enum LIFTER_POSITIONS{
-        DOWN(0),UP(1250);
+        DOWN(0),UP(900);
         final int val;
         LIFTER_POSITIONS(int val) {
             this.val = val;
@@ -46,21 +47,30 @@ public class Lifter implements Updateable{
 
     public void toggle(){
         pid.resetPid();
-        if(lifter_state == LIFTER_POSITIONS.DOWN)
+        if(lifter_state == LIFTER_POSITIONS.DOWN) {
             lifter_state = LIFTER_POSITIONS.UP;
-        else
+            slightlyRetracted = false;
+        }
+        else {
             lifter_state = LIFTER_POSITIONS.DOWN;
+        }
         pid.setTargetPosition(lifter_state.val);
     }
 
 
     @Override
     public void update() {
-        double power = pid.update(right.getCurrentPosition());
-        right.setPower(power);
-        left.setPower(power);
+        if (!slightlyRetracted) {
+            double power = pid.update(right.getCurrentPosition());
+            right.setPower(power);
+            left.setPower(power);
 
-        TelemetryData();
+            TelemetryData();
+        }
+        else {
+            right.setPower(-0.07);
+            left.setPower(-0.07);
+        }
     }
 
     public void TelemetryData(){

@@ -125,6 +125,7 @@ public class Sorting implements  Updateable{
         blade2.setDirection(DcMotorSimple.Direction.FORWARD);
 
         sorting_encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        sorting_encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         /*
         blade.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
@@ -153,6 +154,7 @@ public class Sorting implements  Updateable{
         }
         else if (state == MOVING_STATES.NOTHING){
             current_moving_state = state;
+            last_moving_state = MOVING_STATES.NOTHING;
             return;
         }
         else
@@ -173,7 +175,7 @@ public class Sorting implements  Updateable{
 //                last_moving_state = MOVING_STATES.NOTHING;
 //            }
             shooting_index = 1;
-            shooting_balls = getNumberOfBalls();
+            //shooting_balls = getNumberOfBalls();
             shooting_order = getShooting_order();
             if (current_blade_index % 2 == 0) {
                 if (magazine[6] == shooting_order[1])
@@ -182,14 +184,14 @@ public class Sorting implements  Updateable{
                     rotate_elice(0.5);
             }
             //makeShootingOrder();
-            if (shooting_balls == 0)
+            if (getNumberOfBalls() == 0)
                 current_moving_state = MOVING_STATES.NOTHING;
 
         }
     }
 
 
-    public void manualBlade(){
+    public void manualBlade(double deviation){
         if (startOfManualDeviation==0) startOfManualDeviation = position;
         else deltaManualDeviation = position-startOfManualDeviation;
         if (deltaManualDeviation>=one_rotation){
@@ -198,6 +200,7 @@ public class Sorting implements  Updateable{
         }
         pidElice.setTargetPosition(position);
         runPid = false;
+        manualDeviation = deviation;
         blade1.setPower(manualDeviation);
         blade2.setPower(manualDeviation);
     }
@@ -326,7 +329,7 @@ public class Sorting implements  Updateable{
 
     @Override
     public void update(){
-        position = sorting_encoder.getCurrentPosition();
+        position = -sorting_encoder.getCurrentPosition();
         blade_rotation = (int)position % (int)full_rotation;
         if(blade_rotation<0)blade_rotation=(int)full_rotation+blade_rotation;
         pidError = target-position;
@@ -443,41 +446,45 @@ public class Sorting implements  Updateable{
                 exit_shooting();
                 return;
             }
+            if (shooting_balls<=0) {
+                if (magazine[5] == shooting_order[shooting_index] || (!respectMotif && magazine[5] != COLORS.EMPTY) || movedball) {
+                    shooting_index++;
+                    shooting_balls--;
+                    movedball = false;
+                    safe_timer.reset();
+                    safe_timer.startTime();
+                    transfer_ball(true);
+                } else if ((magazine[1] == shooting_order[shooting_index] || (!respectMotif && magazine[1] != COLORS.EMPTY)) || (magazine[6] == shooting_order[shooting_index] || (!respectMotif && magazine[6] != COLORS.EMPTY))) {
+//                    if (movedball && safe_timer.milliseconds() < 1200) return;
+//                    else if (movedball && safe_timer.milliseconds() > 1200) exit_shooting();
+                    safe_timer.reset();
+                    safe_timer.startTime();
+                    movedball = true;
+                    rotate_elice(-1);
+                    return;
+                } else if ((magazine[3] == shooting_order[shooting_index] || (!respectMotif && magazine[3] != COLORS.EMPTY)) || (magazine[4] == shooting_order[shooting_index]) || (!respectMotif && magazine[4] != COLORS.EMPTY)) {
+//                    if (movedball && safe_timer.milliseconds() < 1200) return;
+//                    else if (movedball && safe_timer.milliseconds() > 1200) exit_shooting();
+                    safe_timer.reset();
+                    safe_timer.startTime();
+                    movedball = true;
 
-            if (magazine[5]==shooting_order[shooting_index] || (!respectMotif && magazine[5] != COLORS.EMPTY)) {
-                shooting_index++;
+                    rotate_elice(1);
+                    return;
+                } else if (!respectMotif) {
+                    shooting_index++;
+                    shooting_balls--;
+                    transfer_ball(true);
+                } else
+                    exit_shooting();
+            }
+            else {
                 shooting_balls--;
-                movedball = false;
-                safe_timer.reset();
-                safe_timer.startTime();
                 transfer_ball(true);
-            }
-            else if ((magazine[1]==shooting_order[shooting_index] || (!respectMotif && magazine[1] != COLORS.EMPTY)) || (magazine[6] == shooting_order[shooting_index]|| (!respectMotif && magazine[6] != COLORS.EMPTY))) {
-                if(movedball && safe_timer.milliseconds()<1200) return;
-                else if (!movedball && safe_timer.milliseconds()>1200) exit_shooting();
-                safe_timer.reset();
-                safe_timer.startTime();
-                movedball = true;
-                rotate_elice(-1);
-                return;
-            }
-            else if ((magazine[3]==shooting_order[shooting_index]|| (!respectMotif && magazine[3] != COLORS.EMPTY) ) || (magazine[4] == shooting_order[shooting_index])|| (!respectMotif && magazine[4] != COLORS.EMPTY)){
-                if(movedball && safe_timer.milliseconds()<1200) return;
-                else if (!movedball && safe_timer.milliseconds()>1200) exit_shooting();
-                safe_timer.reset();
-                safe_timer.startTime();
-                movedball = true;
-
+                if (shooting_balls==0)
+                    exit_shooting();
                 rotate_elice(1);
-                return;
             }
-            else if (!respectMotif) {
-                shooting_index++;
-                shooting_balls--;
-                transfer_ball(true);
-            }
-            else
-                exit_shooting();
 
         }
 //        if (current_moving_state == MOVING_STATES.SHOOTING){
@@ -546,6 +553,10 @@ public class Sorting implements  Updateable{
 
         rotate_elice(rotations);
 
+    }
+    public void shootThreeBalls(){
+        shooting_balls = 3;
+        setNextState(MOVING_STATES.SHOOTING);
     }
     public COLORS[] getShooting_order() {
         int current_shift = shift % 4, current_motif = motif.val;
@@ -706,7 +717,7 @@ public class Sorting implements  Updateable{
             return false;
         }
     }
-    public static int getGreen(){
+    public int getGreen(){
         for(int i=1;i<=6;i++){
             if (magazine[i]==COLORS.GREEN)
                 return i;

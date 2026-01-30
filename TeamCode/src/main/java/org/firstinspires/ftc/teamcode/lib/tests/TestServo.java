@@ -15,20 +15,20 @@ public class TestServo extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-         servo1 = hardwareMap.get(Servo.class, HardwareConfig.turret_hrot1);
-         servo2 = hardwareMap.get(Servo.class, HardwareConfig.turret_hrot2);
+         servo1 = hardwareMap.get(Servo.class, HardwareConfig.transfer_servo1);
+         servo2 = hardwareMap.get(Servo.class, HardwareConfig.transfer_servo2);
          servo3 = hardwareMap.get(Servo.class, HardwareConfig.vertical_angle_servo);
 
          servo1.setDirection(Servo.Direction.FORWARD);
 
-         servo1.setPosition(0.7);
-         servo2.setPosition(0.7);
-         servo3.setPosition(0.7);
+         servo1.setPosition(0);
+         servo2.setPosition(0);
+//         servo3.setPosition(0.7);
 
          waitForStart();
          servo1.setPosition(1);
          servo2.setPosition(1);
-         servo3.setPosition(1);
+//         servo3.setPosition(1);
 
          while(opModeIsActive() && !isStopRequested()){
 

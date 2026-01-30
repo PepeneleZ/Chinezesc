@@ -32,7 +32,7 @@ public class ChasisOnly extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive() && !isStopRequested()) {
-            drive.drive(-controller1.leftStickX, controller1.leftStickY, controller1.rightStickX);
+            drive.drive(-controller1.leftStickY, -controller1.leftStickX, controller1.rightStickX);
 
             controller1.update();
             telemetry.update();

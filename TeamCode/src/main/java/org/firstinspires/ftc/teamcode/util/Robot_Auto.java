@@ -18,6 +18,7 @@ public class Robot_Auto implements Updateable{
     public Intake intake;
     //public Storage storage;
     public Sorting sorting;
+    public Lifter lifter;
     public Turret turret;
     public Limelight limelight;
     public VoltageSensor voltageSensor;
@@ -26,6 +27,7 @@ public class Robot_Auto implements Updateable{
         voltageSensor = hwmap.getAll(VoltageSensor.class).get(0);
         turret = new Turret(hwmap,telemetry);
         intake = new Intake(hwmap);
+        lifter= new Lifter(hwmap,telemetry);
         sorting = new Sorting(hwmap,telemetry,intake,voltageSensor);
         limelight = new Limelight(hwmap,telemetry);
 
@@ -51,6 +53,7 @@ public class Robot_Auto implements Updateable{
     public void update() {
         //storage.update();
         sorting.update();
+        lifter.update();
         turret.update();
         intake.update();
         limelight.update();
