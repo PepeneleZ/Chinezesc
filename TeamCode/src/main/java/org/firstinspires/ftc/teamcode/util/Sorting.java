@@ -63,7 +63,7 @@ public class Sorting implements  Updateable{
     private int shooting_balls = 0;
     private static final double admissible_error=100;//140
     private boolean runPid=false;
-    private double manualDeviation = 0;
+    public double manualDeviation = 0;
     private double deltaManualDeviation = 0;
     private double startOfManualDeviation = 0;
     public boolean respectMotif = true;
@@ -176,7 +176,8 @@ public class Sorting implements  Updateable{
 //            }
             shooting_index = 1;
             //shooting_balls = getNumberOfBalls();
-            shooting_order = getShooting_order();
+            if (shooting_balls!=3)
+                shooting_order = getShooting_order();
             if (current_blade_index % 2 == 0) {
                 if (magazine[6] == shooting_order[1])
                     rotate_elice(-0.5);
@@ -191,16 +192,15 @@ public class Sorting implements  Updateable{
     }
 
 
-    public void manualBlade(double deviation){
+    public void manualBlade(){
         if (startOfManualDeviation==0) startOfManualDeviation = position;
         else deltaManualDeviation = position-startOfManualDeviation;
-        if (deltaManualDeviation>=one_rotation){
-            target += one_rotation;
+        if (Math.abs(deltaManualDeviation)>=one_rotation){
+            target += one_rotation * ((deltaManualDeviation>0)?-1:1);
             deltaManualDeviation-=one_rotation;
         }
         pidElice.setTargetPosition(position);
         runPid = false;
-        manualDeviation = deviation;
         blade1.setPower(manualDeviation);
         blade2.setPower(manualDeviation);
     }
@@ -438,52 +438,45 @@ public class Sorting implements  Updateable{
             if(transfer_isUp || transferTimer.milliseconds()<300)
                 return;
             //if(shooting_balls<=0){
-            if(shooting_index>3){
+            if(shooting_index>3 || shooting_balls==0){
                 exit_shooting();
+                niggacuplus++;
                 return;
             }
-            else if (shooting_order[shooting_index]==COLORS.EMPTY){
+            else if (shooting_order[shooting_index]==COLORS.EMPTY && shooting_balls<0){
                 exit_shooting();
+                niggacuminus++;
                 return;
             }
-            if (shooting_balls<=0) {
+            if (shooting_balls<0) {
                 if (magazine[5] == shooting_order[shooting_index] || (!respectMotif && magazine[5] != COLORS.EMPTY) || movedball) {
                     shooting_index++;
                     shooting_balls--;
                     movedball = false;
-                    safe_timer.reset();
-                    safe_timer.startTime();
                     transfer_ball(true);
                 } else if ((magazine[1] == shooting_order[shooting_index] || (!respectMotif && magazine[1] != COLORS.EMPTY)) || (magazine[6] == shooting_order[shooting_index] || (!respectMotif && magazine[6] != COLORS.EMPTY))) {
 //                    if (movedball && safe_timer.milliseconds() < 1200) return;
 //                    else if (movedball && safe_timer.milliseconds() > 1200) exit_shooting();
-                    safe_timer.reset();
-                    safe_timer.startTime();
                     movedball = true;
                     rotate_elice(-1);
                     return;
                 } else if ((magazine[3] == shooting_order[shooting_index] || (!respectMotif && magazine[3] != COLORS.EMPTY)) || (magazine[4] == shooting_order[shooting_index]) || (!respectMotif && magazine[4] != COLORS.EMPTY)) {
 //                    if (movedball && safe_timer.milliseconds() < 1200) return;
 //                    else if (movedball && safe_timer.milliseconds() > 1200) exit_shooting();
-                    safe_timer.reset();
-                    safe_timer.startTime();
                     movedball = true;
 
                     rotate_elice(1);
                     return;
-                } else if (!respectMotif) {
-                    shooting_index++;
-                    shooting_balls--;
-                    transfer_ball(true);
-                } else
+
+                }
+                else
                     exit_shooting();
             }
+
             else {
                 shooting_balls--;
-                transfer_ball(true);
-                if (shooting_balls==0)
-                    exit_shooting();
                 rotate_elice(1);
+                transfer_ball(true);
             }
 
         }
@@ -555,6 +548,7 @@ public class Sorting implements  Updateable{
 
     }
     public void shootThreeBalls(){
+        shooting_index = 1;
         shooting_balls = 3;
         setNextState(MOVING_STATES.SHOOTING);
     }
@@ -562,6 +556,7 @@ public class Sorting implements  Updateable{
         int current_shift = shift % 4, current_motif = motif.val;
         COLORS[] order = new COLORS[4];
         current_motif -= shift;
+        shooting_balls = -1;
         safe_timer.reset();
         safe_timer.startTime();
         movedball = false;
@@ -583,7 +578,7 @@ public class Sorting implements  Updateable{
         COLORS[] order = new COLORS[4];
         COLORS[] magazine_copy = new COLORS[7];
 
-        shooting_index = 0;
+        shooting_index = 1;
 
 
         current_motif -= shift;
@@ -807,8 +802,8 @@ public class Sorting implements  Updateable{
         telemetry.addData("shooting order 3: ",shooting_order[3]);
 
 
-        telemetry.addData("rotate pozitiva shooting", niggacuplus);
-        telemetry.addData("rotate negativa shooting", niggacuminus);
+        telemetry.addData("s-a iesit din primu if", niggacuplus);
+        telemetry.addData("s-a iesit din al doilea if  ", niggacuminus);
 
 
         telemetry.addLine("--------------------------------------------------"); // separate the mechanisms to make the text easier to read

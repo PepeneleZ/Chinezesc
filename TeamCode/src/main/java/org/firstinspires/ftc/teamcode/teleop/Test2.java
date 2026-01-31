@@ -61,7 +61,7 @@ public class Test2 extends OpMode {
             robot.lifter.toggle();
         }
         if (controller1.dpadDown.isPressed()){
-            robot.turret.setHorizontalPositionFromAngle(Math.toRadians(0));
+            robot.pinpointLocalizer.setPose(new Pose(72,72,0));
         }
         if (controller1.dpadRight.isPressed())
             robot.aimLebron();
@@ -76,7 +76,7 @@ public class Test2 extends OpMode {
             Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.CLOSE);
         }
         if (controller1.square.isPressed()){
-            robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
+            robot.sorting.respectMotif = false;
             robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
         }
 
@@ -107,12 +107,9 @@ public class Test2 extends OpMode {
         if (controller2.bumperRight.isPressed())
             robot.sorting.shift++;
         if (controller1.cross.isPressed()) {
-            if (Turret.turret_launcher_state == TURRET_LAUNCH_SPEEDS.STOPPED)
-                Turret.setTarget_rotation(TURRET_LAUNCH_SPEEDS.CLOSE);
-            else {
-                robot.sorting.respectMotif = true;
-                robot.sorting.setNextState(MOVING_STATES.SHOOTING);
-            }
+            robot.sorting.respectMotif = true;
+            robot.sorting.setNextState(MOVING_STATES.SHOOTING);
+
         }
 //            if (controller2.dpadDown.isPressed()){
 //                robot.sorting.sort_balls();
@@ -125,6 +122,8 @@ public class Test2 extends OpMode {
         if (controller2.dpadRight.isPressed()){
 //            robot.aimLebron();
             //robot.sorting.rotate_elice(1);
+            robot.turret.setVerticalPositionFromAngle(70);
+            robot.turret.setHorizontalPositionFromAngle(0);
         }
         if (controller2.dpadLeft.isPressed()){
             robot.pinpointLocalizer.setPose(new Pose(72,72,0));
@@ -135,8 +134,8 @@ public class Test2 extends OpMode {
             robot.setColor(!robot.color);
 
 
-        robot.sorting.manualBlade(controller2.rightStickX);
-
+//        robot.sorting.manualDeviation = -controller2.rightStickX;
+//
         controller1.update();
         controller2.update();
         robot.update();

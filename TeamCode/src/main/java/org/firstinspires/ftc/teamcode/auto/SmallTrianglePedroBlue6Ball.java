@@ -28,8 +28,8 @@ public class SmallTrianglePedroBlue6Ball extends OpMode {
 
     public static Pose startToSemiMiddleStartPose = new Pose(56,8,Math.toRadians(90));
     public static Pose startToSemiMiddleEndPose = new Pose(43, 36.000);
-    public static Pose semiMiddleToFirstRowOfBallEndPose = new Pose(10,36);
-    public static Pose firstRowOfBallToTriangleEndPose = new Pose(72.000, 72.000);
+    public static Pose semiMiddleToFirstRowOfBallEndPose = new Pose(5,36);
+    public static Pose firstRowOfBallToTriangleEndPose = new Pose(68.000, 72.000);
     public static Pose triangleToParkingEndPose = new Pose(52,54.5);
 
     public static double startHeading = Math.toRadians(90);
@@ -59,7 +59,7 @@ public class SmallTrianglePedroBlue6Ball extends OpMode {
         firstRowOfBallToTriangle = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         semiMiddleToFirstRowOfBallEndPose,
-                        new Pose(25.500, 51.000),
+                        new Pose(25.500, 39),
                         new Pose(67.000, 49.500),
                         firstRowOfBallToTriangleEndPose
                 ))
@@ -76,7 +76,11 @@ public class SmallTrianglePedroBlue6Ball extends OpMode {
 
     public void autonomousUpdate(){
         switch (pathState) {
+
             case 0:
+                if (pathTimer.getElapsedTimeSeconds()>1.5)
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(16.4));
+
                 if (pathTimer.getElapsedTimeSeconds()>2) {
                     robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
                     robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
@@ -155,7 +159,6 @@ public class SmallTrianglePedroBlue6Ball extends OpMode {
         follower = PedroConstants.createFollower(hardwareMap);
         robot = new Robot_Auto(hardwareMap,telemetry);
         robot.sorting.fillMagazine();
-        robot.turret.setHorizontalPositionFromAngle(Math.toRadians(16.4));
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         buildPaths(follower);

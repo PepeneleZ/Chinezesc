@@ -24,7 +24,7 @@ public class SmallTrianglePedroBlue3Ball extends OpMode {
     public PathChain startToParking;
 
     public static Pose startToParkingStartPose = new Pose(56,8,Math.toRadians(90));
-    public static Pose startToParkingEndPose = new Pose(70,8);
+    public static Pose startToParkingEndPose = new Pose(60,12);
 
 
 
@@ -48,6 +48,9 @@ public class SmallTrianglePedroBlue3Ball extends OpMode {
     public void autonomousUpdate(){
         switch (pathState) {
             case 0:
+                if (pathTimer.getElapsedTimeSeconds()>1.5)
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(16.4));
+
                 if (pathTimer.getElapsedTimeSeconds()>2) {
                     robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
                     robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
@@ -83,7 +86,6 @@ public class SmallTrianglePedroBlue3Ball extends OpMode {
         follower = PedroConstants.createFollower(hardwareMap);
         robot = new Robot_Auto(hardwareMap,telemetry);
         robot.sorting.fillMagazine();
-        robot.turret.setHorizontalPositionFromAngle(Math.toRadians(16.4));
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         buildPaths(follower);

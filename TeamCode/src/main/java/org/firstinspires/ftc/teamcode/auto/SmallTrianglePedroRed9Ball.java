@@ -33,12 +33,12 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
 
     public static Pose startToSemiMiddleStartPose = new Pose(56,8,Math.toRadians(90)).mirror();
     public static Pose startToSemiMiddleEndPose = new Pose(43, 36.000).mirror();
-    public static Pose semiMiddleToFirstRowOfBallEndPose = new Pose(10,36).mirror();
+    public static Pose semiMiddleToFirstRowOfBallEndPose = new Pose(5,36).mirror();
 
-    public static Pose firstRowOfBallToTriangleEndPose = new Pose(72.000, 72.000).mirror();
-    public static Pose triangleToSemiSecondRowOfBallsEndPose = new Pose(30.200, 60.300).mirror();
-    public static Pose semiSecondRowOfBallsToSecondRowOfBallsEndPose = new Pose(12,60.3).mirror();
-    public static Pose secondRowOfBallsToTriangleEndPose = new Pose(72.000, 72.000).mirror();
+    public static Pose firstRowOfBallToTriangleEndPose = new Pose(68, 72.000).mirror();
+    public static Pose triangleToSemiSecondRowOfBallsEndPose = new Pose(30.200, 59).mirror();
+    public static Pose semiSecondRowOfBallsToSecondRowOfBallsEndPose = new Pose(6,59).mirror();
+    public static Pose secondRowOfBallsToTriangleEndPose = new Pose(68, 72.000).mirror();
     public static Pose triangleToParkingEndPose = new Pose(52,54.5).mirror();
 
 
@@ -69,7 +69,7 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
         firstRowOfBallToTriangle = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         semiMiddleToFirstRowOfBallEndPose,
-                        new Pose(25.500, 51.000).mirror(),
+                        new Pose(25.500, 39).mirror(),
                         new Pose(67.000, 49.500).mirror(),
                         firstRowOfBallToTriangleEndPose
                 ))
@@ -79,8 +79,8 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
         triangleToSemiSecondRowOfBall = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         firstRowOfBallToTriangleEndPose,
-                        new Pose(70.400, 90.000),
-                        new Pose(50.000, 54.400),
+                        new Pose(70.400, 90.000).mirror(),
+                        new Pose(50.000, 54.400).mirror(),
                         triangleToSemiSecondRowOfBallsEndPose
                 ))
                 .setLinearHeadingInterpolation(triangleHeading, rowOfBallsHeading)
@@ -97,7 +97,7 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
         secondRowOfBallsToTriangle = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         semiSecondRowOfBallsToSecondRowOfBallsEndPose,
-                        new Pose(22.000, 71.700),
+                        new Pose(22.000, 71.700).mirror(),
                         secondRowOfBallsToTriangleEndPose
                 ))
                 .setLinearHeadingInterpolation(rowOfBallsHeading, triangleHeading)
@@ -123,6 +123,9 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
     public void autonomousUpdate(){
         switch (pathState) {
             case 0:
+                if (pathTimer.getElapsedTimeSeconds()>1.5)
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(-28));
+
                 if (pathTimer.getElapsedTimeSeconds()>2) {
                     robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
                     robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
@@ -200,7 +203,7 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
                 }
                 break;
             case 11:
-                if (pathTimer.getElapsedTimeSeconds()>3.2){
+                if (pathTimer.getElapsedTimeSeconds()>4){
                     follower.followPath(triangleToParking);
                     setPathState(12);
                 }
@@ -228,7 +231,6 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
         follower = PedroConstants.createFollower(hardwareMap);
         robot = new Robot_Auto(hardwareMap,telemetry);
         robot.sorting.fillMagazine();
-        robot.turret.setHorizontalPositionFromAngle(Math.toRadians(-20));
         pathTimer = new Timer();
         opmodeTimer = new Timer();
         buildPaths(follower);
