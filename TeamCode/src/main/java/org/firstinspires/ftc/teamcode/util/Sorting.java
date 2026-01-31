@@ -117,7 +117,7 @@ public class Sorting implements  Updateable{
         transfer_servo1.setDirection(Servo.Direction.REVERSE);
 
         transfer_servo1.setPosition(0);
-        transfer_servo2.setPosition(0);
+//        transfer_servo2.setPosition(0);
 
 
         //transfer_servo1.setPosition(transfer_pos.val);
@@ -251,8 +251,8 @@ public class Sorting implements  Updateable{
             return;
         }
         if(!transfer_isUp){
-            transfer_servo1.setPosition(TRANSFER_POS.UP.val/5);
-            transfer_servo2.setPosition(TRANSFER_POS.UP.val);
+            transfer_servo1.setPosition(0.4);
+//            transfer_servo2.setPosition(TRANSFER_POS.UP.val);
 
             transferTimer.reset();
             transferTimer.startTime();
@@ -263,7 +263,7 @@ public class Sorting implements  Updateable{
         }
         else{
             transfer_servo1.setPosition(TRANSFER_POS.DOWN.val);
-            transfer_servo2.setPosition(TRANSFER_POS.DOWN.val);
+//            transfer_servo2.setPosition(TRANSFER_POS.DOWN.val);
 
             transferTimer.reset();
         }
@@ -275,8 +275,8 @@ public class Sorting implements  Updateable{
             return;
         }
         if(direction){
-            transfer_servo1.setPosition(TRANSFER_POS.UP.val/5);
-            transfer_servo2.setPosition(TRANSFER_POS.UP.val);
+            transfer_servo1.setPosition(0.4);
+//            transfer_servo2.setPosition(TRANSFER_POS.UP.val);
 
             transferTimer.reset();
             transferTimer.startTime();
@@ -288,7 +288,7 @@ public class Sorting implements  Updateable{
         }
         else{
             transfer_servo1.setPosition(TRANSFER_POS.DOWN.val);
-            transfer_servo2.setPosition(TRANSFER_POS.DOWN.val);
+//            transfer_servo2.setPosition(TRANSFER_POS.DOWN.val);
             transferTimer.reset();
             transfer_isUp = false;
         }
@@ -437,7 +437,7 @@ public class Sorting implements  Updateable{
         }
       //  SHOOOOOOOOOOOOOOOOOOOOOOOOOOOOOTIIIIIIIIIIIIIIIIIIIIIINNNNNNNNNNNNNNNNNNNGGGGGGGGG
         if (current_moving_state == MOVING_STATES.SHOOTING){
-            if(transfer_isUp || transferTimer.milliseconds()<300)
+            if(transfer_isUp || transferTimer.milliseconds()<375)
                 return;
             //if(shooting_balls<=0){
             if(shooting_index>3 || shooting_balls==0){
@@ -456,13 +456,13 @@ public class Sorting implements  Updateable{
                     shooting_balls--;
                     movedball = false;
                     transfer_ball(true);
-                } else if ((magazine[1] == shooting_order[shooting_index] || (!respectMotif && magazine[1] != COLORS.EMPTY)) || (magazine[6] == shooting_order[shooting_index] || (!respectMotif && magazine[6] != COLORS.EMPTY))) {
+                } else if (magazine[1] == shooting_order[shooting_index] || (!respectMotif && magazine[1] != COLORS.EMPTY)) {
 //                    if (movedball && safe_timer.milliseconds() < 1200) return;
 //                    else if (movedball && safe_timer.milliseconds() > 1200) exit_shooting();
                     movedball = true;
                     rotate_elice(-1);
                     return;
-                } else if ((magazine[3] == shooting_order[shooting_index] || (!respectMotif && magazine[3] != COLORS.EMPTY)) || (magazine[4] == shooting_order[shooting_index]) || (!respectMotif && magazine[4] != COLORS.EMPTY)) {
+                } else if (magazine[3] == shooting_order[shooting_index] || (!respectMotif && magazine[3] != COLORS.EMPTY)) {
 //                    if (movedball && safe_timer.milliseconds() < 1200) return;
 //                    else if (movedball && safe_timer.milliseconds() > 1200) exit_shooting();
                     movedball = true;

@@ -27,19 +27,24 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
     public PathChain triangleToSemiSecondRowOfBall;
     public PathChain semiSecondRowOfBallToSecondRowOfBall;
     public PathChain secondRowOfBallsToTriangle;
-
+    public PathChain triangleToSemiThirdRowOfBalls;
+    public PathChain semiThirdRowOfBallsToThirdRowOfBalls;
+    public PathChain thirdRowOfBallsToTriangle;
     public PathChain triangleToParking;
 
 
-    public static Pose startToSemiMiddleStartPose = new Pose(56,8,Math.toRadians(90)).mirror();
-    public static Pose startToSemiMiddleEndPose = new Pose(43, 36.000).mirror();
-    public static Pose semiMiddleToFirstRowOfBallEndPose = new Pose(5,36).mirror();
+    public static Pose startToSemiMiddleStartPose = new Pose(99,8,Math.toRadians(90));
+    public static Pose startToSemiMiddleEndPose = new Pose(107, 21);
+    public static Pose semiMiddleToFirstRowOfBallEndPose = new Pose(134.5,21);
 
-    public static Pose firstRowOfBallToTriangleEndPose = new Pose(68, 72.000).mirror();
-    public static Pose triangleToSemiSecondRowOfBallsEndPose = new Pose(30.200, 59).mirror();
-    public static Pose semiSecondRowOfBallsToSecondRowOfBallsEndPose = new Pose(6,59).mirror();
-    public static Pose secondRowOfBallsToTriangleEndPose = new Pose(68, 72.000).mirror();
-    public static Pose triangleToParkingEndPose = new Pose(52,54.5).mirror();
+    public static Pose firstRowOfBallToTriangleEndPose = new Pose(102, 12);
+    public static Pose triangleToSemiSecondRowOfBallsEndPose = new Pose(105, 45);
+    public static Pose semiSecondRowOfBallsToSecondRowOfBallsEndPose = new Pose(134,45);
+    public static Pose secondRowOfBallsToTriangleEndPose = new Pose(89, 71);
+    public static Pose triangleToSemiThirdRowOfBallsEndPose= new Pose(103,71);
+    public static Pose semiThirdRowOfBallsToThirdRowOfBallsEndPose= new Pose(125,70);
+    public static Pose thirdRowOfBallsEndToTriangleEndPose = new Pose(89,71);
+    public static Pose triangleToParkingEndPose = new Pose(119,69);
 
 
     public static double startHeading = Math.toRadians(90);
@@ -48,83 +53,99 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
     public static double gateHeading = Math.toRadians(-140);
 
 
-
     public void buildPaths(Follower follower) {
         startToSemiMiddle = follower.pathBuilder()
-                .addPath(new BezierCurve(
+                .addPath(new BezierLine(
                         startToSemiMiddleStartPose,
-                        new Pose(87, 40.100111234705224).mirror(),
                         startToSemiMiddleEndPose
                 ))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(Math.toRadians(90),Math.toRadians(0))
                 .build();
         semiMiddleToFirstRowOfBall = follower.pathBuilder()
                 .addPath(new BezierLine(
                         startToSemiMiddleEndPose,
                         semiMiddleToFirstRowOfBallEndPose
                 ))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(Math.toRadians(0),Math.toRadians(1))
                 .build();
 
         firstRowOfBallToTriangle = follower.pathBuilder()
-                .addPath(new BezierCurve(
+                .addPath(new BezierLine(
                         semiMiddleToFirstRowOfBallEndPose,
-                        new Pose(25.500, 39).mirror(),
-                        new Pose(67.000, 49.500).mirror(),
                         firstRowOfBallToTriangleEndPose
                 ))
-                .setLinearHeadingInterpolation(follower.getHeading(), triangleHeading)
+                .setLinearHeadingInterpolation(Math.toRadians(1), Math.toRadians(90))
                 .build();
 
         triangleToSemiSecondRowOfBall = follower.pathBuilder()
-                .addPath(new BezierCurve(
+                .addPath(new BezierLine(
                         firstRowOfBallToTriangleEndPose,
-                        new Pose(70.400, 90.000).mirror(),
-                        new Pose(50.000, 54.400).mirror(),
                         triangleToSemiSecondRowOfBallsEndPose
                 ))
-                .setLinearHeadingInterpolation(triangleHeading, rowOfBallsHeading)
-
+                .setLinearHeadingInterpolation(Math.toRadians(90),Math.toRadians(0))
                 .build();
         semiSecondRowOfBallToSecondRowOfBall = follower.pathBuilder()
                 .addPath(new BezierLine(
                         triangleToSemiSecondRowOfBallsEndPose,
                         semiSecondRowOfBallsToSecondRowOfBallsEndPose
                 ))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(Math.toRadians(0),Math.toRadians(1))
                 .build();
 
         secondRowOfBallsToTriangle = follower.pathBuilder()
                 .addPath(new BezierCurve(
                         semiSecondRowOfBallsToSecondRowOfBallsEndPose,
-                        new Pose(22.000, 71.700).mirror(),
+                        new Pose(100,40),
                         secondRowOfBallsToTriangleEndPose
                 ))
-                .setLinearHeadingInterpolation(rowOfBallsHeading, triangleHeading)
+                .setLinearHeadingInterpolation(Math.toRadians(1), Math.toRadians(20))
+
+                .build();
+        triangleToSemiThirdRowOfBalls = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        secondRowOfBallsToTriangleEndPose,
+                        triangleToSemiThirdRowOfBallsEndPose
+                ))
+                .setLinearHeadingInterpolation(Math.toRadians(20), Math.toRadians(0))
+
+                .build();
+        semiThirdRowOfBallsToThirdRowOfBalls = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        triangleToSemiThirdRowOfBallsEndPose,
+                        semiThirdRowOfBallsToThirdRowOfBallsEndPose
+                ))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(1))
+
+                .build();
+        thirdRowOfBallsToTriangle = follower.pathBuilder()
+                .addPath(new BezierLine(
+                        semiThirdRowOfBallsToThirdRowOfBallsEndPose,
+                        thirdRowOfBallsEndToTriangleEndPose
+                ))
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(1))
 
                 .build();
         triangleToParking = follower.pathBuilder()
                 .addPath(new BezierLine(
-                        secondRowOfBallsToTriangleEndPose,
+                        thirdRowOfBallsEndToTriangleEndPose,
                         triangleToParkingEndPose
                 ))
-                .setTangentHeadingInterpolation()
+                .setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(10))
+
                 .build();
 
-        triangleToParking = follower.pathBuilder()
-                .addPath(new BezierLine(
-                        secondRowOfBallsToTriangleEndPose,
-                        triangleToParkingEndPose
-                ))
-                .setTangentHeadingInterpolation()
-                .build();
     }
+
 
     public void autonomousUpdate(){
         switch (pathState) {
             case 0:
+                if(pathTimer.getElapsedTimeSeconds()>0.5)
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(30));
+                if (pathTimer.getElapsedTimeSeconds()>1)
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(19));
                 if (pathTimer.getElapsedTimeSeconds()>1.5)
-                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(-28));
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(-20.5));
 
                 if (pathTimer.getElapsedTimeSeconds()>2) {
                     robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
@@ -133,7 +154,8 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
                 }
                 break;
             case 1:
-                if (pathTimer.getElapsedTimeSeconds()>3.2) {
+                if (pathTimer.getElapsedTimeSeconds()>2.75) {
+                    follower.setMaxPower(0.8);
                     follower.followPath(startToSemiMiddle);
                     setPathState(2);
                 }
@@ -141,7 +163,7 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
             case 2:
                 if (!follower.isBusy()){
                     robot.sorting.setNextState(Constants.MOVING_STATES.WAITING_INTAKE);
-                    robot.intake.toggle();
+                    robot.intake.toggle(Constants.INTAKE_STATES.COLLECTING);
                     setPathState(3);
                 }
                 break;
@@ -153,67 +175,104 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
 
                 }
                 break;
+
             case 4:
-                if (pathTimer.getElapsedTimeSeconds()>0.2)
-                    setPathState(5);
-                break;
-            case 5:
                 if(!follower.isBusy()){
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.9);
                     follower.followPath(firstRowOfBallToTriangle);
-                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(40));
-                    Turret.setTarget_rotation(52);
-                    setPathState(6);
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(-20));
+                    Turret.setTarget_rotation(56);
+                    setPathState(5);
                 }
                 break;
-            case 6:
+            case 5:
                 if(!follower.isBusy() || pathTimer.getElapsedTimeSeconds()>3) {
                     robot.intake.toggle(Constants.INTAKE_STATES.STOPPED);
                     robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
                     robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
+                    setPathState(6);
+                }
+                break;
+            case 6:
+                if (pathTimer.getElapsedTimeSeconds()>2.8){
+                    follower.followPath(triangleToSemiSecondRowOfBall);
                     setPathState(7);
                 }
                 break;
             case 7:
-                if (pathTimer.getElapsedTimeSeconds()>4) {
-                    follower.followPath(triangleToParking);
+                if (!follower.isBusy()){
+                    follower.setMaxPower(0.4);
+                    robot.intake.toggle(Constants.INTAKE_STATES.COLLECTING);
+                    robot.sorting.setNextState(Constants.MOVING_STATES.WAITING_INTAKE);
+                    follower.followPath(semiSecondRowOfBallToSecondRowOfBall);
                     setPathState(8);
                 }
                 break;
             case 8:
                 if (!follower.isBusy()){
-                    robot.intake.toggle(Constants.INTAKE_STATES.COLLECTING);
-                    robot.sorting.setNextState(Constants.MOVING_STATES.WAITING_INTAKE);
-                    follower.followPath(semiSecondRowOfBallToSecondRowOfBall);
+                    robot.turret.setVerticalPositionFromAngle(Math.toRadians(49));
+                    Turret.setTarget_rotation(43);
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(16));
+                    follower.setMaxPower(0.9);
+                    follower.followPath(secondRowOfBallsToTriangle);
                     setPathState(9);
                 }
                 break;
             case 9:
                 if (!follower.isBusy()){
-                    Turret.setTarget_rotation(52);
-                    follower.followPath(secondRowOfBallsToTriangle);
+                    robot.intake.toggle(Constants.INTAKE_STATES.STOPPED);
+                    robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
+                    robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
                     setPathState(10);
                 }
                 break;
             case 10:
-                if (!follower.isBusy()){
-                    robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
-                    robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
+                if (pathTimer.getElapsedTimeSeconds()>2.6){
+                    robot.intake.toggle(Constants.INTAKE_STATES.COLLECTING);
+                    robot.sorting.setNextState(Constants.MOVING_STATES.WAITING_INTAKE);
+                    follower.followPath(triangleToSemiThirdRowOfBalls);
                     setPathState(11);
                 }
                 break;
             case 11:
-                if (pathTimer.getElapsedTimeSeconds()>4){
-                    follower.followPath(triangleToParking);
+                if (!follower.isBusy()){
+                    follower.setMaxPower(0.4);
+                    follower.followPath(semiThirdRowOfBallsToThirdRowOfBalls);
                     setPathState(12);
                 }
                 break;
             case 12:
                 if (!follower.isBusy()){
+                    follower.setMaxPower(1);
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(45));
+                    follower.followPath(thirdRowOfBallsToTriangle);
+                    setPathState(13);
+                }
+                break;
+            case 13:
+                if (!follower.isBusy()){
+                    robot.intake.toggle(Constants.INTAKE_STATES.STOPPED);
+                    robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
+                    robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
+                    setPathState(14);
+                }
+                break;
+            case 14:
+                if (pathTimer.getElapsedTimeSeconds()>0.5)
+                    setPathState(15);
+            case 15:
+                if (pathTimer.getElapsedTimeSeconds()>2.6){
+                    follower.followPath(triangleToParking);
+                    setPathState(16);
+                }
+                break;
+            case 16:
+                if (!follower.isBusy()){
                     Robot.poseBetweenTeleops = follower.getPose();
                     setPathState(-1);
                 }
                 break;
+
         }
     }
 
@@ -247,7 +306,8 @@ public class SmallTrianglePedroRed9Ball extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         robot.turret.setVerticalPositionFromAngle(Math.toRadians(30));
-        Turret.setTarget_rotation(58);
+        robot.turret.setHorizontalPositionFromAngle(Math.toRadians(60));
+        Turret.setTarget_rotation(55);
         setPathState(0);
     }
 }

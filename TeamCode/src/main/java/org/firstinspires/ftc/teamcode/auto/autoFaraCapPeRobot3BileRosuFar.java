@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.util.Robot_Auto;
 import org.firstinspires.ftc.teamcode.util.Turret;
 
 @Autonomous
-public class SmallTrianglePedroRed3Ball extends OpMode {
+public class autoFaraCapPeRobot3BileRosuFar extends OpMode {
     private Follower follower;
     private Robot_Auto robot;
     private Timer pathTimer, actionTimer, opmodeTimer;
@@ -24,7 +24,7 @@ public class SmallTrianglePedroRed3Ball extends OpMode {
     public PathChain startToParking;
 
     public static Pose startToParkingStartPose = new Pose(56,8,Math.toRadians(90)).mirror();
-    public static Pose startToParkingEndPose = new Pose(30,3).mirror();
+    public static Pose startToParkingEndPose = new Pose(30,8).mirror();
 
 
 
@@ -49,10 +49,11 @@ public class SmallTrianglePedroRed3Ball extends OpMode {
         switch (pathState) {
             case 0:
                 if (pathTimer.getElapsedTimeSeconds()>1.5)
-                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(-22));
+                    robot.turret.setHorizontalPositionFromAngle(Math.toRadians(-30));
 
                 if (pathTimer.getElapsedTimeSeconds()>2) {
-                    robot.sorting.shootThreeBalls();
+                    robot.sorting.respectMotif = robot.sorting.getNumberOfBalls() == 3 && robot.sorting.getGreen() != 0;
+                    robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
                     setPathState(1);
                 }
                 break;
@@ -88,7 +89,7 @@ public class SmallTrianglePedroRed3Ball extends OpMode {
         opmodeTimer = new Timer();
         buildPaths(follower);
         robot.sorting.respectMotif = true;
-        follower.setStartingPose(startToParkingStartPose);
+        follower.setStartingPose(new Pose(startToParkingStartPose.getX(),startToParkingStartPose.getY(),Math.toRadians(60)));
 
 
     }
@@ -99,9 +100,9 @@ public class SmallTrianglePedroRed3Ball extends OpMode {
     @Override
     public void start() {
         opmodeTimer.resetTimer();
-        robot.turret.setHorizontalPositionFromAngle(Math.toRadians(20));
+        robot.turret.setHorizontalPositionFromAngle(30);
         robot.turret.setVerticalPositionFromAngle(Math.toRadians(30));
-        Turret.setTarget_rotation(56);
+        Turret.setTarget_rotation(58);
         setPathState(0);
     }
 }

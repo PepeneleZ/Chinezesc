@@ -57,9 +57,9 @@ public class Test2 extends OpMode {
             robot.intake.toggle(INTAKE_STATES.SPITTING_OUT);
         }
 
-        if (controller1.dpadUp.isPressed()){
-            robot.lifter.toggle();
-        }
+//        if (controller1.dpadUp.isPressed()){
+//            robot.lifter.toggle();
+//        }
         if (controller1.dpadDown.isPressed()){
             robot.pinpointLocalizer.setPose(new Pose(72,72,0));
         }
@@ -79,6 +79,7 @@ public class Test2 extends OpMode {
             robot.sorting.respectMotif = false;
             robot.sorting.setNextState(Constants.MOVING_STATES.SHOOTING);
         }
+
 
 
         if (controller1.triangle.isPressed()) {
