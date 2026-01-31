@@ -24,7 +24,7 @@ public class SmallTrianglePedroRed3Ball extends OpMode {
     public PathChain startToParking;
 
     public static Pose startToParkingStartPose = new Pose(56,8,Math.toRadians(90)).mirror();
-    public static Pose startToParkingEndPose = new Pose(60,12).mirror();
+    public static Pose startToParkingEndPose = new Pose(30,16).mirror();
 
 
 

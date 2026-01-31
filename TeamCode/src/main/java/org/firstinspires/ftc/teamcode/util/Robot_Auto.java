@@ -25,7 +25,7 @@ public class Robot_Auto implements Updateable{
 
     public Robot_Auto(HardwareMap hwmap, Telemetry telemetry){
         voltageSensor = hwmap.getAll(VoltageSensor.class).get(0);
-        turret = new Turret(hwmap,telemetry);
+        turret = new Turret(hwmap,telemetry, voltageSensor);
         intake = new Intake(hwmap);
         lifter= new Lifter(hwmap,telemetry);
         sorting = new Sorting(hwmap,telemetry,intake,voltageSensor);

@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.PIDF;
@@ -17,7 +19,10 @@ public class Lifter implements Updateable{
     static int MAX_RANGE = 2250;
     public LIFTER_POSITIONS lifter_state = LIFTER_POSITIONS.DOWN;
     public boolean slightlyRetracted = true;
+    public double kT=0.5;
     Telemetry telemetry;
+
+    ElapsedTime timer;
 
     public Lifter(HardwareMap hwmap, Telemetry telemetry){
         left = hwmap.get(DcMotorEx.class, HardwareConfig.left_lifter);
@@ -53,6 +58,8 @@ public class Lifter implements Updateable{
         }
         else {
             lifter_state = LIFTER_POSITIONS.DOWN;
+            timer.reset();
+            timer.startTime();
         }
         pid.setTargetPosition(lifter_state.val);
     }
@@ -61,9 +68,19 @@ public class Lifter implements Updateable{
     @Override
     public void update() {
         if (!slightlyRetracted) {
-            double power = pid.update(right.getCurrentPosition());
-            right.setPower(power);
-            left.setPower(power);
+            if(lifter_state == LIFTER_POSITIONS.UP){
+                double power = pid.update(right.getCurrentPosition());
+                right.setPower(power);
+                left.setPower(power);
+            } else if (lifter_state == LIFTER_POSITIONS.DOWN) {
+                double deltaPower = Range.clip(kT*timer.seconds(),0,0.5);
+                double power = 1 - deltaPower;
+                right.setPower(power);
+                left.setPower(power);
+
+            }
+
+
 
             TelemetryData();
         }
@@ -71,6 +88,8 @@ public class Lifter implements Updateable{
             right.setPower(-0.07);
             left.setPower(-0.07);
         }
+
+
     }
 
     public void TelemetryData(){

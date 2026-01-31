@@ -42,7 +42,7 @@ public class Robot implements Updateable{
 
     public Robot(HardwareMap hwmap, Telemetry telemetry){
         voltageSensor = hwmap.getAll(VoltageSensor.class).get(0);
-        turret = new Turret(hwmap,telemetry);
+        turret = new Turret(hwmap,telemetry,voltageSensor);
         driveTrain = new Drivetrain(hwmap);
         intake = new Intake(hwmap);
         sorting = new Sorting(hwmap,telemetry,intake,voltageSensor);

@@ -65,9 +65,11 @@ public class Sorting implements  Updateable{
     private boolean runPid=false;
     public double manualDeviation = 0;
     private double deltaManualDeviation = 0;
+
     private double startOfManualDeviation = 0;
     public boolean respectMotif = true;
     private boolean movedball = false;
+    public boolean shotBall = false;
     public static double kF_fornrofballs=1e-10;
     public double collectTime = 0;
     private double rotations_for_telemetry;
@@ -185,7 +187,7 @@ public class Sorting implements  Updateable{
                     rotate_elice(0.5);
             }
             //makeShootingOrder();
-            if (getNumberOfBalls() == 0)
+            if (getNumberOfBalls() == 0 && shooting_balls !=3)
                 current_moving_state = MOVING_STATES.NOTHING;
 
         }
@@ -474,9 +476,13 @@ public class Sorting implements  Updateable{
             }
 
             else {
-                shooting_balls--;
-                rotate_elice(1);
-                transfer_ball(true);
+                if (!shotBall) {
+                    transfer_ball(true);
+                    shooting_balls--;
+                    shotBall = true;
+                }
+                else
+                    rotate_elice(1);
             }
 
         }
@@ -550,6 +556,7 @@ public class Sorting implements  Updateable{
     public void shootThreeBalls(){
         shooting_index = 1;
         shooting_balls = 3;
+        shotBall = false;
         setNextState(MOVING_STATES.SHOOTING);
     }
     public COLORS[] getShooting_order() {

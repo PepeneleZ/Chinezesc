@@ -102,7 +102,7 @@ public class Test2 extends OpMode {
             robot.sorting.shootThreeBalls();
         }
         if (controller2.bumperLeft.isPressed()){
-            robot.intake.toggle(INTAKE_STATES.COLLECTING);
+            robot.sorting.shift=0;
         }
         if (controller2.bumperRight.isPressed())
             robot.sorting.shift++;
@@ -126,7 +126,7 @@ public class Test2 extends OpMode {
             robot.turret.setHorizontalPositionFromAngle(0);
         }
         if (controller2.dpadLeft.isPressed()){
-            robot.pinpointLocalizer.setPose(new Pose(72,72,0));
+            robot.intake.toggle(INTAKE_STATES.COLLECTING);
         }
         if (controller2.dpadUp.isPressed())
             robot.sorting.transfer_ball(true);

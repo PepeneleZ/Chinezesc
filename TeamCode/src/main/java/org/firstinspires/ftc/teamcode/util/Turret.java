@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.lib.Feedforward;
@@ -25,7 +26,7 @@ public class Turret implements Updateable{
     private static Servo vertical_angle_servo;
     private static Servo left_hrot_servo, right_hrot_servo;
     //private static DcMotorEx hrot_encoder;
-   // private final VoltageSensor voltageSensor;
+    private final VoltageSensor voltageSensor;
     private Telemetry telemetry;
     public double delta_horizontal_angle;
     public double angleBetweenRobotAndLebron;
@@ -50,7 +51,7 @@ public class Turret implements Updateable{
     // (ticks/second * 2 * pi)/motor_resolution - this is omega (angular velocity)
     // multiply  omega with R - radius
     // euristical logic - to test things
-    public Turret(HardwareMap hwmap, Telemetry telemetry){//, VoltageSensor voltageSensor){
+    public Turret(HardwareMap hwmap, Telemetry telemetry, VoltageSensor voltageSensor){
         turret_launch = hwmap.get(DcMotorEx.class, HardwareConfig.turret_launch);
         launch_encoder = hwmap.get(DcMotorEx.class,HardwareConfig.RB);
         //hrot_encoder = hwmap.get(DcMotorEx.class, HardwareConfig.back_lifter);
@@ -78,7 +79,7 @@ public class Turret implements Updateable{
         left_hrot_servo.setPosition(0.5);
         right_hrot_servo.setPosition(0.5);
         feedforwardController.reset();
-        //this.voltageSensor = voltageSensor;
+        this.voltageSensor = voltageSensor;
         setTarget_rotation(turret_launcher_state);
 
 
@@ -212,7 +213,7 @@ public class Turret implements Updateable{
     public void update() {
         turret_launch_position = launch_encoder.getCurrentPosition()/ticksPerLaunchRotation;
         power_of_launch = feedforwardController.update(turret_launch_position);
-        //power_of_launch = power_of_launch * (14/voltageSensor.getVoltage());
+        power_of_launch = power_of_launch * (12.4/voltageSensor.getVoltage());
         if (runPid) {
             turret_launch.setPower(power_of_launch);
         }

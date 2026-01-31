@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.lib.Controller;
@@ -17,6 +18,7 @@ import java.io.CharArrayReader;
 public class TestTurret extends LinearOpMode {
 
     Turret turret;
+    VoltageSensor voltageSensor;
     public static int target=20;
     public static double deltaHorizontalAngle = 20, deltaVerticalAngle = 10;
     public static double verticalAngle=30, horizontalAngle=0;
@@ -28,7 +30,9 @@ public class TestTurret extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        turret = new Turret(hardwareMap, telemetry);
+        voltageSensor = hardwareMap.getAll(VoltageSensor.class).get(0);
+
+        turret = new Turret(hardwareMap, telemetry, voltageSensor);
         controller1 = new Controller(gamepad1);
         controller2 = new Controller(gamepad2);
         waitForStart();
