@@ -481,8 +481,10 @@ public class Sorting implements  Updateable{
                     shooting_balls--;
                     shotBall = true;
                 }
-                else
+                else {
                     rotate_elice(1);
+                    shotBall = false;
+                }
             }
 
         }

@@ -24,7 +24,7 @@ public class SmallTrianglePedroBlue3Ball extends OpMode {
     public PathChain startToParking;
 
     public static Pose startToParkingStartPose = new Pose(56,8,Math.toRadians(90));
-    public static Pose startToParkingEndPose = new Pose(30,16);
+    public static Pose startToParkingEndPose = new Pose(30,8);
 
 
     public static double startHeading = Math.toRadians(90);
@@ -40,7 +40,7 @@ public class SmallTrianglePedroBlue3Ball extends OpMode {
                         startToParkingStartPose,
                         startToParkingEndPose
                 ))
-                .setTangentHeadingInterpolation()
+                .setConstantHeadingInterpolation(startHeading)
                 .build();
     }
 
@@ -101,7 +101,7 @@ public class SmallTrianglePedroBlue3Ball extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         robot.turret.setVerticalPositionFromAngle(Math.toRadians(30));
-        Turret.setTarget_rotation(58);
+        Turret.setTarget_rotation(56);
         setPathState(0);
     }
 }

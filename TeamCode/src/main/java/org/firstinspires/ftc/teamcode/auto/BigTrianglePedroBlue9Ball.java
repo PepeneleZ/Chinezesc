@@ -31,7 +31,7 @@ public class BigTrianglePedroBlue9Ball extends OpMode {
     public static double startHeading = Math.toRadians(180);
 
 
-    public static Pose startToShootingPositionStartPose = new Pose(32.516, 135.9911012235817);
+    public static Pose startToShootingPositionStartPose = new Pose(36, 125);
     public static Pose startToShootingPositionEndPose = new Pose(49.593, 84.053);
     public static Pose shootingPositionToThirdRowEndPose = new Pose(9.1, 83.4);
 

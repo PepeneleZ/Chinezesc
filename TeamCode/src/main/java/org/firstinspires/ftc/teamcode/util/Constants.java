@@ -37,7 +37,7 @@ public class Constants {
 
     /// /////////////// TURRET /////////////// ///
     public enum TURRET_LAUNCH_SPEEDS{
-        CLOSE(45),FAR(52),STOPPED(0), CUSTOM(40);
+        CLOSE(46),FAR(54),STOPPED(0), CUSTOM(40);
         final double val;
         TURRET_LAUNCH_SPEEDS(double val) {
             this.val = val;

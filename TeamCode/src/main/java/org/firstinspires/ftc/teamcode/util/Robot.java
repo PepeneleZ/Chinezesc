@@ -36,7 +36,7 @@ public class Robot implements Updateable{
 
     public final int lebronListSize = 7;
     public int[] lebronDistances = {20,30,40,50,60,80,147};
-    public int[] lebronTurretSpeeds = {38,38,40,45,45,50,58};
+    public int[] lebronTurretSpeeds = {37,37,39,44,44,49,56};
     public int[] lebronTurretAngle = {70,70,70,30,30,30,30};
     private int lebronIndex;
 
